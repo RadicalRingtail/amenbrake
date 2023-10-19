@@ -28,7 +28,7 @@ class Metadata:
 class Converter:
     # creates a new conversion job with specified settings that can be executed on multiple files
 
-    def __init__(self, codec: Codecs, encoder: Encoders, bitrate: Bitrates, samplerate: Samplerates, output_loc):
+    def __init__(self, codec: Codecs, encoder: Encoders, bitrate: Bitrates, samplerate: Samplerates, output_loc: str):
             self.codec = codec
             self.encoder = encoder
             self.bitrate = bitrate
