@@ -1,4 +1,5 @@
 import ffmpeg, os
+from support import Codecs, Bitrates, Samplerates, Encoders
 
 class Metadata:
     # creates a metadata object that can be returned as valid metadata for ffmpeg
@@ -27,7 +28,7 @@ class Metadata:
 class Converter:
     # creates a new conversion job with specified settings that can be executed on multiple files
 
-    def __init__(self, codec, encoder, bitrate, samplerate, output_loc):
+    def __init__(self, codec: Codecs, encoder: Encoders, bitrate: Bitrates, samplerate: Samplerates, output_loc):
             self.codec = codec
             self.encoder = encoder
             self.bitrate = bitrate
@@ -46,37 +47,36 @@ class Converter:
             'metadata:s:v':'comment={}'.format("Cover (front)")
                 }
 
-        file_format = "{0}.{1}".format(metadata.title, self.codec)
+        file_format = "{0}.{1}".format(metadata.title, self.codec.value)
 
         match self.codec:
-            case 'mp3':
+            case Codecs.MP3:
                 output = (
                     ffmpeg
                     .output(audio, cover, os.path.join(self.output_loc, file_format), 
-                            **metadata.get(), **cover_data, **{'acodec':self.encoder, 'b:a':self.bitrate, 'ar':self.samplerate})
+                            **metadata.get(), **cover_data, **{'acodec':self.encoder.value, 'b:a':'{}k'.format(str(self.bitrate.value)), 'ar':str(self.samplerate.value)})
                     .global_args('-map', '0')
                     .global_args('-map', '1')
                 )
-            case 'wav':
+            case Codecs.WAV:
                 output = (
                     ffmpeg
                     .output(audio, os.path.join(output_loc, self.metadata.title))
                 )
-            case 'flac':
-                output = (
-                    ffmpeg
-                    .output(audio, cover, os.path.join(self.output_loc, file_format), 
-                            **metadata.get(), **cover_data, **{'acodec':self.encoder, 'ar':self.samplerate})
-                    .global_args('-map', '0')
-                    .global_args('-map', '1')
-                )
-            case 'aiff':
-                output = (
-                    ffmpeg
-                    .output(audio, cover, os.path.join(self.output_loc, file_format), 
-                            **metadata.get(), **cover_data, **{'acodec':self.encoder, 'b:a':self.bitrate, 'ar':self.samplerate})
-                    .global_args('-map', '0')
-                    .global_args('-map', '1')
-                )
+            case _:
+                pass
             
         output.run()
+
+def metadata_test():
+    # testing out classes
+    m = Metadata()
+
+    m.title = "test"
+    m.artist = "test"
+
+    job = Converter(Codecs.MP3, Encoders.MP3_LIBMP3LAME, Bitrates.B_320, Samplerates.S_44, 'tests')
+
+    job.convert('/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav', '/Users/ringtail/dev/converter-tool/tests/songs1/cover art.JPG', m)
+
+metadata_test()
