@@ -8,22 +8,21 @@ class Metadata:
         self.artist = None
         self.date = None
         self.album = None
-        self.track_number = None
+        self.track = None
         self.album_artist = None
         self.comment = None
 
     def get(self):
-        metadata = {
-            'metadata:g:0':'title={}'.format(self.title), 
-            'metadata:g:1':'artist={}'.format(self.artist),
-            'metadata:g:2':'date={}'.format(self.date),
-            'metadata:g:3':'album={}'.format(self.album),
-            'metadata:g:4':'track={}'.format(self.track_number),
-            'metadata:g:5':'album_artist={}'.format(self.album_artist),
-            'metadata:g:6':'comment={}'.format(self.comment),
-                }
+        metadata = {}
+        index = 0
+
+        for key, tag in self.__dict__.items():
+            if tag is not None:
+                metadata['metadata:g:{}'.format(str(index))] = '{0}={1}'.format(key, str(tag))
+                index += 1
 
         return metadata
+
 
 class Converter:
     # creates a new conversion job with specified settings that can be executed on multiple files
@@ -81,16 +80,3 @@ class Converter:
                 )
             
         output.run()
-
-def metadata_test():
-    # testing out classes
-    m = Metadata()
-
-    m.title = "test"
-    m.artist = "test"
-
-    job = Converter('mp3', 'libmp3lame', '320k', '44100', '')
-
-    job.convert('/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav', '/Users/ringtail/dev/converter-tool/tests/songs1/cover art.JPG', m)
-
-metadata_test()
