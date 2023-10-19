@@ -29,6 +29,9 @@ class Converter:
     # creates a new conversion job with specified settings that can be executed on multiple files
 
     def __init__(self, codec: Codecs, encoder: Encoders, bitrate: Bitrates, samplerate: Samplerates, output_loc: str):
+        # todo: make encoder, bitrate, and samplerate optional, have a default value to set them at
+        # todo: possibly remove encoder argument all together, just have encoders set by default
+
             self.codec = codec
             self.encoder = encoder
             self.bitrate = bitrate
@@ -47,13 +50,13 @@ class Converter:
             'metadata:s:v':'comment={}'.format("Cover (front)")
                 }
 
-        file_format = "{0}.{1}".format(metadata.title, self.codec.value)
+        path = os.path.join(self.output_loc, "{0}.{1}".format(metadata.title, self.codec.value))
 
         match self.codec:
             case Codecs.MP3:
                 output = (
                     ffmpeg
-                    .output(audio, cover, os.path.join(self.output_loc, file_format), 
+                    .output(audio, cover, path, 
                             **metadata.get(), **cover_data, **{'acodec':self.encoder.value, 'b:a':'{}k'.format(str(self.bitrate.value)), 'ar':str(self.samplerate.value)})
                     .global_args('-map', '0')
                     .global_args('-map', '1')
@@ -61,7 +64,7 @@ class Converter:
             case Codecs.WAV:
                 output = (
                     ffmpeg
-                    .output(audio, os.path.join(output_loc, self.metadata.title))
+                    .output(audio, path, **{'acodec':self.encoder.value, 'ar':str(self.samplerate.value)})
                 )
             case _:
                 pass
