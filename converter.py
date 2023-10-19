@@ -35,7 +35,7 @@ class Converter:
             self.samplerate = samplerate
             self.output_loc = output_loc
 
-    def convert(self, input_file, cover_art, metadata: Metadata):
+    def convert(self, input_file: str, cover_art: str, metadata: Metadata):
         output = None
 
         audio = ffmpeg.input(input_file).audio
