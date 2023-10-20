@@ -28,24 +28,23 @@ class Metadata:
 class Converter:
     # creates a new conversion job with specified settings that can be executed on multiple files
 
-    def __init__(self, codec: Codecs, encoder: Encoders, bitrate: Bitrates, samplerate: Samplerates, output_loc: str):
-        # todo: make encoder, bitrate, and samplerate optional, have a default value to set them at
-        # todo: possibly remove encoder argument all together, just have encoders set by default
+    def __init__(self, codec: Codecs, output_loc: str):
 
             self.codec = codec
-            self.encoder = encoder
-            self.bitrate = bitrate
-            self.samplerate = samplerate
             self.output_loc = output_loc
+
+            self.bitrate = Bitrates.B_320
+            self.samplerate = Samplerates.S_44
+            self.quality = None
 
     def convert(self, input_file: str, cover_art: str, metadata: Metadata):
         output = None
 
         audio = ffmpeg.input(input_file).audio
-        cover = ffmpeg.input(cover_art)
+        cover = ffmpeg.input(cover_art, pix_fmt='yuvj420p')
 
         cover_data = {
-            'codec:v:1':'mjpeg',
+            'c:v':'mjpeg',
             'metadata:s:v':'title={}'.format("cover"),
             'metadata:s:v':'comment={}'.format("Cover (front)")
                 }
@@ -56,15 +55,19 @@ class Converter:
             case Codecs.MP3:
                 output = (
                     ffmpeg
-                    .output(audio, cover, path, 
-                            **metadata.get(), **cover_data, **{'acodec':self.encoder.value, 'b:a':self.bitrate.value, 'ar':self.samplerate.value))
+                    .output(audio, cover, path, **metadata.get(), **cover_data, **{'acodec':'libmp3lame', 'b:a':self.bitrate.value, 'ar':self.samplerate.value})
                     .global_args('-map', '0')
                     .global_args('-map', '1')
                 )
             case Codecs.WAV:
                 output = (
                     ffmpeg
-                    .output(audio, path, **{'acodec':self.encoder.value, 'ar':self.samplerate.value))
+                    .output(audio, path, **{'acodec':'pcm_s16be', 'ar':self.samplerate.value})
+                )
+            case Codecs.AIFF:
+                output = (
+                    ffmpeg
+                    .output(audio, path, **metadata.get(), **cover_data, **{'acodec':'pcm_s16be', 'ar':self.samplerate.value})
                 )
             case _:
                 pass
@@ -78,8 +81,10 @@ def metadata_test():
     m.title = "test"
     m.artist = "test"
 
-    job = Converter(Codecs.MP3, Encoders.MP3_LIBMP3LAME, Bitrates.B_320, Samplerates.S_44, 'tests')
+    job = Converter(Codecs.MP3, 'tests')
 
     job.convert('/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav', '/Users/ringtail/dev/converter-tool/tests/songs1/cover art.JPG', m)
-
+    
 metadata_test()
+
+print(ffmpeg.probe('/Users/ringtail/dev/converter-tool/tests/test.mp3')['streams'])
