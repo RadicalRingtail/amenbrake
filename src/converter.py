@@ -57,14 +57,14 @@ class Converter:
                 output = (
                     ffmpeg
                     .output(audio, cover, path, 
-                            **metadata.get(), **cover_data, **{'acodec':self.encoder.value, 'b:a':'{}k'.format(str(self.bitrate.value)), 'ar':str(self.samplerate.value)})
+                            **metadata.get(), **cover_data, **{'acodec':self.encoder.value, 'b:a':self.bitrate.value, 'ar':self.samplerate.value))
                     .global_args('-map', '0')
                     .global_args('-map', '1')
                 )
             case Codecs.WAV:
                 output = (
                     ffmpeg
-                    .output(audio, path, **{'acodec':self.encoder.value, 'ar':str(self.samplerate.value)})
+                    .output(audio, path, **{'acodec':self.encoder.value, 'ar':self.samplerate.value))
                 )
             case _:
                 pass
