@@ -1,4 +1,6 @@
 .venv
-tests
 .DS_Store
 __pycache__
+.vscode
+
+tests
