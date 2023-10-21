@@ -42,3 +42,20 @@ class Encoders(Enum):
     OGG_VORPIS = 'libvorpis'
     WAV_WAVPACK = 'wavpack'
     AIFF_PCM = 'pcm_s16be'
+
+class Quality(Enum):
+    # tuples of compression and quality values for each encoder within a valid range as per ffmpeg documentation
+
+    LAME = tuple([str(i) for i in range(0, 10)])
+    FLAC = tuple([str(i) for i in range(0, 13)])
+    VORBIS = tuple([str(i / 10.0) for i in range(-10, 105, 5)])
+
+def FILEDIALOG_SUPPORTED_FILES():
+    # returns all valid file types for use in tkinter filedialog
+
+    filetypes = []
+
+    for c in Codecs:
+        filetypes.append((c.value, '*.{}'.format(c.value)))
+
+    return(tuple(filetypes))
