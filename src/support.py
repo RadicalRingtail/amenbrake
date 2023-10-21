@@ -36,12 +36,10 @@ class Samplerates(Enum):
     S_48 = '48000'
 
 class Encoders(Enum):
-    MP3_LIBMP3LAME = 'libmp3lame'
-    FLAC_FLAC = 'flac'
-    OGG_OPUS = 'libopus'
-    OGG_VORPIS = 'libvorpis'
-    WAV_WAVPACK = 'wavpack'
-    AIFF_PCM = 'pcm_s16be'
+    LIBMP3LAME = 'libmp3lame'
+    FLAC = 'flac'
+    VORPIS = 'libvorpis'
+    PCM_16 = 'pcm_s16be'
 
 class Quality(Enum):
     # tuples of compression and quality values for each encoder within a valid range as per ffmpeg documentation
@@ -56,6 +54,6 @@ def FILEDIALOG_SUPPORTED_FILES():
     filetypes = []
 
     for c in Codecs:
-        filetypes.append((c.value, '*.{}'.format(c.value)))
+        filetypes.append(('{} Files'.format(c.value.upper()), '*.{}'.format(c.value)))
 
     return(tuple(filetypes))

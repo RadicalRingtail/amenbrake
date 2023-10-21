@@ -30,18 +30,17 @@ class Converter:
 
     def __init__(self, codec: Codecs, output_loc: str):
 
-            self.codec = codec
             self.output_loc = output_loc
 
+            self.codec = codec
             self.bitrate = Bitrates.B_320
             self.samplerate = Samplerates.S_44
+            self.encoder = None
+            self.vbr = False
             self.quality = None
 
     def convert(self, input_file: str, cover_art: str, metadata: Metadata):
         output = None
-
-        audio = ffmpeg.input(input_file).audio
-        cover = ffmpeg.input(cover_art, pix_fmt='yuvj420p')
 
         cover_data = {
             'c:v':'mjpeg',
@@ -49,28 +48,62 @@ class Converter:
             'metadata:s:v':'comment={}'.format("Cover (front)")
                 }
 
+        options = {
+            'c:a':self.encoder.value, 
+            'ar':self.samplerate.value
+                }
+
         path = os.path.join(self.output_loc, "{0}.{1}".format(metadata.title, self.codec.value))
+
+        audio = ffmpeg.input(input_file).audio
+        cover = ffmpeg.input(cover_art, pix_fmt='yuvj420p')
 
         match self.codec:
             case Codecs.MP3:
+                if vbr:
+                    options['q:a'] = self.quality.value
+                elif not vbr:
+                    options['b:a'] = self.bitrate.value
+
                 output = (
                     ffmpeg
-                    .output(audio, cover, path, **metadata.get(), **cover_data, **{'acodec':'libmp3lame', 'b:a':self.bitrate.value, 'ar':self.samplerate.value})
+                    .output(audio, cover, path, **metadata.get(), **cover_data, **options)
                     .global_args('-map', '0')
                     .global_args('-map', '1')
                 )
-            case Codecs.WAV:
+
+            case Codecs.FLAC:
+                options['compression_level'] = self.quality.value
+
                 output = (
                     ffmpeg
-                    .output(audio, path, **{'acodec':'pcm_s16be', 'ar':self.samplerate.value})
+                    .output(audio, cover, path, **metadata.get(), **cover_data, **options)
+                    .global_args('-map', '0')
+                    .global_args('-map', '1')
                 )
+
             case Codecs.AIFF:
                 output = (
                     ffmpeg
-                    .output(audio, path, **metadata.get(), **cover_data, **{'acodec':'pcm_s16be', 'ar':self.samplerate.value})
+                    .output(audio, path, **metadata.get(), **cover_data, **options)
                 )
-            case _:
-                pass
+
+            case Codecs.OGG:
+                if vbr:
+                    options['q:a'] = self.quality.value
+                elif not vbr:
+                    options['b:a'] = self.bitrate.value
+
+                output = (
+                    ffmpeg
+                    .output(audio, cover, path, **options)
+                )
+
+            case Codecs.WAV:
+                output = (
+                    ffmpeg
+                    .output(audio, path, **options)
+                )
             
         output.run()
 
