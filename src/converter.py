@@ -1,5 +1,5 @@
 import ffmpeg, os
-from support import Codecs, Bitrates, Samplerates, Encoders
+from support import Codecs, Bitrates, Samplerates, Encoders, Quality
 
 class Metadata:
     # creates a metadata object that can be returned as valid metadata for ffmpeg
@@ -60,9 +60,9 @@ class Converter:
 
         match self.codec:
             case Codecs.MP3:
-                if vbr:
-                    options['q:a'] = self.quality.value
-                elif not vbr:
+                if self.vbr:
+                    options['q:a'] = self.quality
+                elif not self.vbr:
                     options['b:a'] = self.bitrate.value
 
                 output = (
@@ -73,7 +73,7 @@ class Converter:
                 )
 
             case Codecs.FLAC:
-                options['compression_level'] = self.quality.value
+                options['compression_level'] = self.quality
 
                 output = (
                     ffmpeg
@@ -89,9 +89,9 @@ class Converter:
                 )
 
             case Codecs.OGG:
-                if vbr:
-                    options['q:a'] = self.quality.value
-                elif not vbr:
+                if self.vbr:
+                    options['q:a'] = self.quality
+                elif not self.vbr:
                     options['b:a'] = self.bitrate.value
 
                 output = (
@@ -114,7 +114,11 @@ def metadata_test():
     m.title = "test"
     m.artist = "test"
 
-    job = Converter(Codecs.MP3, 'tests')
+    job = Converter(Codecs.OGG, 'tests')
+
+    job.encoder = Encoders.VORBIS
+    job.vbr = True
+    job.quality = Quality.LAME.value[6]
 
     job.convert('/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav', '/Users/ringtail/dev/converter-tool/tests/songs1/cover art.JPG', m)
     

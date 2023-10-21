@@ -1,5 +1,7 @@
 from enum import Enum
 
+# contains enums and other constants that are used across the application
+
 class Codecs(Enum):
     WAV = 'wav'
     MP3 = 'mp3'
@@ -57,3 +59,5 @@ def FILEDIALOG_SUPPORTED_FILES():
         filetypes.append(('{} Files'.format(c.value.upper()), '*.{}'.format(c.value)))
 
     return(tuple(filetypes))
+
+SUPPORTED_EXT = tuple('.{}'.format(c.value) for c in Codecs)
