@@ -9,6 +9,8 @@ class Application():
         self.file_list = None
 
     def input_files(self, type):
+        # opens a filedialog and returns a tuple of full file paths to all valid files that the user selected or that were in a selected directory
+
         files = []
 
         if type == 'file':
@@ -26,6 +28,8 @@ class Application():
         print(self.file_list)
 
 class Track:
+    # instances a track object
+
     def __init__(self, path, codec: Codecs):
         self.path = path
         self.Codecs = Codecs
@@ -33,6 +37,7 @@ class Track:
         self.cover_art = None
         self.metadata = None
 
+# testing/debug
 app = Application()
 
 app.input_files('folder')

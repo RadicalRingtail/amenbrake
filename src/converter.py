@@ -40,6 +40,10 @@ class Converter:
             self.quality = None
 
     def convert(self, input_file: str, cover_art: str, metadata: Metadata):
+        # transcodes, adds metadata/cover art, sets encoding options
+
+        # todo: aac support
+
         output = None
 
         cover_data = {
