@@ -3,7 +3,7 @@ from tkinter import messagebox
 from ui import Window
 
 if __name__ == '__main__':
-    # check if theres a valid ffmpeg install present, if so, initialize the application
+    # checks if theres a valid ffmpeg install present, if so, it initializes the application
 
     if which('ffmpeg') is not None:
         Window()

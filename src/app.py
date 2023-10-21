@@ -2,7 +2,7 @@ from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES
 
 class Application():
-    # contains application functions
+    # instances the application, contains application functions
 
     def __init__(self):
         self.file_list = None
