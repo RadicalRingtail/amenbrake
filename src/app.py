@@ -1,6 +1,7 @@
 import os, ffmpeg
 from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
+from converter import Metadata
 
 class Application():
     # instances the application, contains application functions
@@ -26,6 +27,13 @@ class Application():
 
         self.file_list = files
         print(self.file_list)
+
+    def create_objects(self):
+        for path in file_list:
+            metadata = Metadata()
+            existing_metadata = ffmpeg.probe(path)['format']['tags']
+
+            metadata.title = existing_metadata
 
 class Track:
     # instances a track object

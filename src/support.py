@@ -40,7 +40,7 @@ class Samplerates(Enum):
 class Encoders(Enum):
     LIBMP3LAME = 'libmp3lame'
     FLAC = 'flac'
-    VORPIS = 'libvorpis'
+    VORBIS = 'libvorbis'
     PCM_16 = 'pcm_s16be'
 
 class Quality(Enum):

@@ -13,7 +13,7 @@ class Metadata:
         self.album_artist = None
         self.comment = None
 
-    def get(self):
+    def get_data(self):
         metadata = {}
         index = 0
 
@@ -23,6 +23,11 @@ class Metadata:
                 index += 1
 
         return metadata
+
+    def set_data(self, data):
+        for key, tag in self.__dict__.items():
+            if key in data.keys():
+                setattr(self, key, data[key])
 
 
 class Converter:
@@ -71,7 +76,7 @@ class Converter:
 
                 output = (
                     ffmpeg
-                    .output(audio, cover, path, **metadata.get(), **cover_data, **options)
+                    .output(audio, cover, path, **metadata.get_data(), **cover_data, **options)
                     .global_args('-map', '0')
                     .global_args('-map', '1')
                 )
@@ -81,7 +86,7 @@ class Converter:
 
                 output = (
                     ffmpeg
-                    .output(audio, cover, path, **metadata.get(), **cover_data, **options)
+                    .output(audio, cover, path, **metadata.get_data(), **cover_data, **options)
                     .global_args('-map', '0')
                     .global_args('-map', '1')
                 )
@@ -89,7 +94,7 @@ class Converter:
             case Codecs.AIFF:
                 output = (
                     ffmpeg
-                    .output(audio, path, **metadata.get(), **cover_data, **options)
+                    .output(audio, path, **metadata.get_data(), **cover_data, **options)
                 )
 
             case Codecs.OGG:
@@ -118,14 +123,23 @@ def metadata_test():
     m.title = "test"
     m.artist = "test"
 
-    job = Converter(Codecs.OGG, 'tests')
+    job = Converter(Codecs.MP3, 'tests')
 
-    job.encoder = Encoders.VORBIS
+    job.encoder = Encoders.LIBMP3LAME
     job.vbr = True
     job.quality = Quality.LAME.value[6]
 
     job.convert('/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav', '/Users/ringtail/dev/converter-tool/tests/songs1/cover art.JPG', m)
     
-metadata_test()
+#metadata_test()
 
-print(ffmpeg.probe('/Users/ringtail/dev/converter-tool/tests/test.mp3')['streams'])
+#print(ffmpeg.probe('/Users/ringtail/dev/converter-tool/tests/test.mp3')['format']['tags'])
+
+def metadata_set():
+    m = Metadata()
+    data = {'title':'test', 'artist':'test'}
+    m.set_data(data)
+
+    print(m.__dict__)
+
+metadata_set()
