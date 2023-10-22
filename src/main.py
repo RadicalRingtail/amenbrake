@@ -9,5 +9,3 @@ if __name__ == '__main__':
         Window()
     else:
         messagebox.showerror(title='Erorr', message='No ffmpeg installation found!', command=exit)
-
-    

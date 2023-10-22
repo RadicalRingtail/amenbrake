@@ -22,8 +22,8 @@ class Window(tk.Tk):
         menu = tk.Menu(self)
 
         file_menu = tk.Menu(menu, tearoff=False)
-        file_menu.add_command(label='Open file(s)', command=lambda: self.app.input_files('file'))
-        file_menu.add_command(label='Open folder', command=lambda: self.app.input_files('folder'))
+        file_menu.add_command(label='Open file(s)', command=lambda: self.app.import_files('file'))
+        file_menu.add_command(label='Open folder', command=lambda: self.app.import_files('folder'))
         
         menu.add_cascade(label='File', menu=file_menu)
 

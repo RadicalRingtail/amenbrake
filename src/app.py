@@ -1,4 +1,4 @@
-import os, ffmpeg
+import os, ffmpeg, tempfile
 from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
 from converter import Metadata
@@ -12,13 +12,23 @@ class Track:
         self.cover_art = None
         self.metadata = None
 
+class Group:
+    # instances a group object (album)
+
+    def __init__(self):
+        self.album = None
+        self.album_artist = None
+        self.date = None
+        self.cover_art = None
+        self.tracks = None
+
 class Application():
     # instances the application, contains application functions
 
     def __init__(self):
-        pass
+        self.groups = []
 
-    def create_objects(self, file_list):
+    def create_track_objects(self, file_list):
         # creates a list of track objects
 
         track_objects = []
@@ -27,7 +37,7 @@ class Application():
             probe_data = ffmpeg.probe(path)['format']
 
             current_format = probe_data['format_name']
-            track = Track(path, Codecs(current_format).name)
+            track = Track(path, Codecs(current_format))
 
             if 'tags' in probe_data:
                 metadata = Metadata()
@@ -37,10 +47,16 @@ class Application():
 
             track_objects.append(track)
 
-        print(track_objects)
+        return track_objects
 
-    def input_files(self, type):
-        # opens a filedialog and returns a tuple of full file paths to all valid files that the user selected or that were in a selected directory
+    def create_group(self, tracks):
+        group = Group()
+        group.tracks = tracks
+
+        self.groups.append(group)
+
+    def import_files(self, type):
+        # opens a filedialog and creates a tuple of file paths which are then turned into track objects and added to a group object
 
         files = []
 
@@ -55,9 +71,18 @@ class Application():
 
             files = tuple(files)
 
-        self.create_objects(files)
+        imported_tracks = self.create_track_objects(files)
+        self.create_group(imported_tracks)
 
-# testing/debug
-app = Application()
+        self.debug_groups()
 
-app.input_files('file')
+    
+    def debug_groups(self):
+        # just to check if all the data is correct
+        for group in self.groups:
+            print(group.__dict__)
+
+            for track in group.tracks:
+
+                print(track.__dict__)
+                print(track.__dict__['metadata'].__dict__)
