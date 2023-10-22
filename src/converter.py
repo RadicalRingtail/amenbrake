@@ -134,19 +134,3 @@ def metadata_test():
 #metadata_test()
 
 #print(ffmpeg.probe('/Users/ringtail/dev/converter-tool/tests/test.mp3')['format']['tags'])
-
-def metadata_set():
-    m = Metadata()
-    data = {'title':'test', 'artist':'test'}
-    m.set_data(data)
-
-    print(m.__dict__)
-
-def metadata_read():
-    path = '/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav'
-    #metadata = Metadata()
-    existing_metadata = ffmpeg.probe(path)['format']
-
-    #metadata.set_data(existing_metadata)
-
-    print(existing_metadata)

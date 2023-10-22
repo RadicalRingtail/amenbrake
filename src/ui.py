@@ -13,6 +13,7 @@ class Window(tk.Tk):
 
         self.title('converter tool')
         self.geometry('800x600')
+        self.protocol('WM_DELETE_WINDOW', self.on_close)
 
         self.create_menu()
         
@@ -28,3 +29,6 @@ class Window(tk.Tk):
         menu.add_cascade(label='File', menu=file_menu)
 
         self.configure(menu=menu)
+
+    def on_close(self):
+        self.app.exit()
