@@ -124,7 +124,6 @@ class Application():
             index += 1
         
         self.remove_dup_files(group.temp_path)
-        print(os.listdir(group.temp_path))
 
     
     def remove_dup_files(self, path):

@@ -115,22 +115,3 @@ class Converter:
                 )
             
         output.run()
-
-def metadata_test():
-    # testing out classes
-    m = Metadata()
-
-    m.title = "test"
-    m.artist = "test"
-
-    job = Converter(Codecs.MP3, 'tests')
-
-    job.encoder = Encoders.LIBMP3LAME
-    job.vbr = True
-    job.quality = Quality.LAME.value[6]
-
-    job.convert('/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav', '/Users/ringtail/dev/converter-tool/tests/songs1/cover art.JPG', m)
-    
-#metadata_test()
-
-#print(ffmpeg.probe('/Users/ringtail/dev/converter-tool/tests/test.mp3')['format']['tags'])
