@@ -1,4 +1,4 @@
-import os, ffmpeg, tempfile, filecmp
+import os, ffmpeg, tempfile, hashlib
 from pathlib import Path
 from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
@@ -30,6 +30,14 @@ class Application():
     def __init__(self):
         self.temp_folder = tempfile.TemporaryDirectory()
         self.queue = []
+    
+
+    def exit(self):
+        # runs when app is closed
+
+        self.temp_folder.cleanup()
+        exit()
+    
 
     def import_files(self, type):
         # opens a filedialog and creates a tuple of file paths which are then turned into track objects and added to a group object
@@ -49,8 +57,6 @@ class Application():
 
         imported_tracks = self.create_track_objects(files)
         self.create_group(imported_tracks)
-
-        self.debug_groups()
 
 
     def create_track_objects(self, paths):
@@ -95,8 +101,6 @@ class Application():
 
         for new_track in tracks:
             group.tracks.append(new_track)
-        
-        self.debug_groups()
 
 
     def get_cover_art(self, group):
@@ -119,15 +123,26 @@ class Application():
 
             index += 1
         
+        self.remove_dup_files(group.temp_path)
         print(os.listdir(group.temp_path))
 
-
-    def exit(self):
-        # runs when app is closed
-
-        self.temp_folder.cleanup()
-        exit()
     
+    def remove_dup_files(self, path):
+        # removes all duplicate files in a given path
+
+        files = []
+
+        for f in os.listdir(path):
+            full_path = os.path.join(path, f)
+
+            with open(full_path, 'rb') as open_file:
+                file_hash = hashlib.md5(open_file.read()).digest()
+
+                if file_hash not in files:
+                    files.append(file_hash)
+                else:
+                    os.remove(full_path)
+
 
     def debug_groups(self):
         # just to check if all the data is correct
