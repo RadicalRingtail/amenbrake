@@ -1,4 +1,5 @@
 import os, ffmpeg, tempfile, filecmp
+from pathlib import Path
 from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
 from converter import Metadata
@@ -21,6 +22,7 @@ class Group:
         self.date = None
         self.cover_art = None
         self.tracks = None
+        self.temp_path = None
 
 class Application():
     # instances the application, contains application functions
@@ -78,6 +80,10 @@ class Application():
 
         group = Group()
         group.tracks = tracks
+        group.temp_path = os.path.join(self.temp_folder.name, str(id(self)))
+        os.mkdir(group.temp_path)
+
+        self.get_cover_art(group)
 
         self.queue.append(group)
 
@@ -93,18 +99,27 @@ class Application():
         self.debug_groups()
 
 
-    def get_cover_art(self, path):
-        # retrieves cover art from a imported track
+    def get_cover_art(self, group):
+        # retrieves cover art from the track(s) in a group
+        
+        index = 0
 
-        file_output = os.path.join(self.temp_folder.name + 'cover.jpg')
+        for track in group.tracks:
+            
+            file_name = '{0}_{1}.jpg'.format(Path(track.path).stem, str(index))
+            file_output = os.path.join(group.temp_path, file_name)
 
-        command = (
-            ffmpeg
-            .input(path)
-            .output(file_output, **{'c:v':'copy', 'frames:v':'1'})
-            .global_args('-an')
-            .run(overwrite_output=False)
-        )
+            command = (
+                ffmpeg
+                .input(track.path)
+                .output(file_output, **{'c:v':'copy', 'frames:v':'1'})
+                .global_args('-an')
+                .run(overwrite_output=True, quiet=True)
+            )
+
+            index += 1
+        
+        print(os.listdir(group.temp_path))
 
 
     def exit(self):
@@ -113,13 +128,16 @@ class Application():
         self.temp_folder.cleanup()
         exit()
     
-    
+
     def debug_groups(self):
         # just to check if all the data is correct
-        for group in self.groups:
+        for group in self.queue:
             print(group.__dict__)
 
             for track in group.tracks:
 
                 print(track.__dict__)
                 print(track.__dict__['metadata'].__dict__)
+
+app = Application()
+app.import_files('file')
