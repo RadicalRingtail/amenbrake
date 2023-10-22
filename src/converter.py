@@ -142,4 +142,11 @@ def metadata_set():
 
     print(m.__dict__)
 
-metadata_set()
+def metadata_read():
+    path = '/Users/ringtail/dev/converter-tool/tests/songs1/1 intro.wav'
+    #metadata = Metadata()
+    existing_metadata = ffmpeg.probe(path)['format']
+
+    #metadata.set_data(existing_metadata)
+
+    print(existing_metadata)
