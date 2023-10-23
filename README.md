@@ -9,6 +9,6 @@ A simple audio transcoder and metadata editor.
 - ``python@3.12``
 - ``ffmpeg``
 
-To install dependencies, run ``venv.py`` or ``pip install -r requirements.txt``
+To install dependencies, run ``venv_setup.py`` or ``pip install -r requirements.txt``
 
 ----------------
