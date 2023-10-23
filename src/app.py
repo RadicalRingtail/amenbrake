@@ -78,11 +78,12 @@ class Application():
             current_format = probe_data['format_name']
             track = Track(path, Codecs(current_format))
 
+            metadata = Metadata()
+
             if 'tags' in probe_data:
-                metadata = Metadata()
                 metadata.set_data(probe_data['tags'])
 
-                track.metadata = metadata
+            track.metadata = metadata
 
             track_objects.append(track)
 

@@ -8,4 +8,4 @@ if __name__ == '__main__':
     if which('ffmpeg') is not None:
         Window()
     else:
-        messagebox.showerror(title='Erorr', message='No ffmpeg installation found!', command=exit)
+        messagebox.showerror(title='Erorr', message='No ffmpeg installation found!')

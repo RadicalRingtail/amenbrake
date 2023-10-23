@@ -1,4 +1,5 @@
 import ffmpeg, os
+from pathlib import Path
 from support import Codecs, Bitrates, Samplerates, Encoders, Quality
 import helpers
 
@@ -30,6 +31,7 @@ class Metadata(helpers.Common):
 
 class Converter(helpers.Common):
     # creates a new conversion job with specified settings that can be executed on multiple files
+    # todo: fix issues when importing tracks with no metadata
 
     def __init__(self):
 
@@ -60,7 +62,11 @@ class Converter(helpers.Common):
             'ar':self.samplerate.value
                 }
 
-        name_format = file_out_name.format_map(helpers.FormatFilter(metadata.__dict__)) + '.' + self.codec.value
+        if metadata.__dict__:
+            name_format = file_out_name.format_map(helpers.FormatFilter(metadata.__dict__)) + '.' + self.codec.value
+        else:
+            name_format = Path(input_file).stem + '.' + self.codec.value
+
         path = os.path.join(self.output_loc, name_format)
 
         audio = ffmpeg.input(input_file).audio
