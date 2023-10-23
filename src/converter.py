@@ -13,6 +13,7 @@ class Metadata:
         self.album_artist = None
         self.comment = None
 
+
     def get_data(self):
         metadata = {}
         index = 0
@@ -23,6 +24,7 @@ class Metadata:
                 index += 1
 
         return metadata
+
 
     def set_data(self, data):
         for key, tag in self.__dict__.items():
@@ -43,6 +45,7 @@ class Converter:
             self.encoder = None
             self.vbr = False
             self.quality = None
+
 
     def convert(self, input_file: str, cover_art: str, metadata: Metadata):
         # transcodes, adds metadata/cover art, sets encoding options

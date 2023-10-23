@@ -4,6 +4,7 @@ from tkinter import filedialog
 
 from app import Application
 
+
 class Window(tk.Tk):
     # instances ui, contains things related to the main window
 
@@ -16,9 +17,15 @@ class Window(tk.Tk):
         self.protocol('WM_DELETE_WINDOW', self.on_close)
 
         self.create_menu()
+        self.create_layout()
         
         self.mainloop()
+
+
+    def on_close(self):
+        self.app.exit()
     
+
     def create_menu(self):
         menu = tk.Menu(self)
 
@@ -30,5 +37,33 @@ class Window(tk.Tk):
 
         self.configure(menu=menu)
 
-    def on_close(self):
-        self.app.exit()
+
+    def create_layout(self):
+        Tabs(self)
+
+
+class Tabs(ttk.Notebook):
+    # instaces the widget for the main window tabs
+
+    def __init__(self, root):
+        super().__init__()
+        self.add(InputView(), text='Input')
+        self.add(OutputView(), text='Output')
+
+        self.pack()
+
+
+class InputView(tk.Frame):
+    # instances the input view frame
+
+    def __init__(self):
+        super().__init__()
+        self.pack()
+
+
+class OutputView(tk.Frame):
+    # instances the Output view frame
+
+    def __init__(self):
+        super().__init__()
+        self.pack()

@@ -5,6 +5,7 @@ from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
 from converter import Metadata
 import helpers
 
+
 class Track:
     # instances a track object
 
@@ -13,6 +14,7 @@ class Track:
         self.codec = codec
         self.cover_art = None
         self.metadata = None
+
 
 class Group:
     # instances a group object (album)
@@ -25,12 +27,14 @@ class Group:
         self.tracks = None
         self.temp_path = None
 
+
 class Application():
     # instances the application, contains application functions
 
     def __init__(self):
         self.temp_folder = tempfile.TemporaryDirectory()
-        self.queue = []
+        self.group_queue = {}
+        self.format_queue = {}
     
 
     def exit(self):
@@ -85,24 +89,32 @@ class Application():
 
 
     def create_group(self, tracks):
-        # instaces a new group object and appends it to the queue
+        # instaces a new group object and adds it to the group_queue
 
         group = Group()
+        group_id = str(id(group))
+
         group.tracks = tracks
-        group.temp_path = os.path.join(self.temp_folder.name, str(id(self)))
+        group.temp_path = os.path.join(self.temp_folder.name, group_id)
         os.mkdir(group.temp_path)
 
         self.get_cover_art(group)
+
         images = Path(group.temp_path).glob('*.jpg')
-        group.cover_art = os.path.join(group.temp_path, list(img.name for img in images)[0])
+        image_list = list(i for i in images)
 
-        self.queue.append(group)
+        if not image_list:
+            pass
+        else:
+           group.cover_art = os.path.join(group.temp_path, image_list[0].name)
+
+        self.group_queue[group_id] = group
 
 
-    def add_to_group(self, index, tracks):
+    def add_to_group(self, id, tracks):
         # adds tracks to an existing group
 
-        group = queue[index]
+        group = group_queue[id]
 
         for new_track in tracks:
             group.tracks.append(new_track)
@@ -119,28 +131,28 @@ class Application():
             file_name = '{0}_{1}.jpg'.format(Path(track.path).stem, str(index))
             file_output = os.path.join(group.temp_path, file_name)
 
-            command = (
-                ffmpeg
-                .input(track.path)
-                .output(file_output, **{'c:v':'copy', 'frames:v':'1'})
-                .global_args('-an')
-                .run(overwrite_output=True, quiet=True)
-            )
+            try:
+                command = (
+                    ffmpeg
+                    .input(track.path)
+                    .output(file_output, **{'c:v':'copy', 'frames:v':'1'})
+                    .global_args('-an')
+                    .run(overwrite_output=True, capture_stderr=True, quiet=True)
+                )
 
-            track.cover_art = file_output
+                track.cover_art = file_output
 
-            index += 1
+                index += 1
+            except ffmpeg.Error as e:
+                print(e.stderr.decode('utf8'))
 
 
     def debug_groups(self):
         # just to check if all the data is correct
-        for group in self.queue:
+        print(self.group_queue)
+        for key, group in self.group_queue.items():
             print(group.__dict__)
 
             for track in group.tracks:
 
                 print(track.__dict__)
-                print(track.__dict__['metadata'].__dict__)
-
-app = Application()
-app.import_files('file')

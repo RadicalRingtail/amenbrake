@@ -9,6 +9,7 @@ class Codecs(Enum):
     AIFF = 'aiff'
     OGG = 'ogg'
 
+
 class Bitrates(Enum):
     B_24 = '24k'
     B_32 = '32k'
@@ -26,6 +27,7 @@ class Bitrates(Enum):
     B_256 = '256k'
     B_320 = '320k'
 
+
 class Samplerates(Enum):
     S_8 = '8000'
     S_11 = '11025'
@@ -37,11 +39,13 @@ class Samplerates(Enum):
     S_44 = '44100'
     S_48 = '48000'
 
+
 class Encoders(Enum):
     LIBMP3LAME = 'libmp3lame'
     FLAC = 'flac'
     VORBIS = 'libvorbis'
     PCM_16 = 'pcm_s16be'
+
 
 class Quality(Enum):
     # tuples of compression and quality values for each encoder within a valid range as per ffmpeg documentation
@@ -49,6 +53,7 @@ class Quality(Enum):
     LAME = tuple([str(i) for i in range(0, 10)])
     FLAC = tuple([str(i) for i in range(0, 13)])
     VORBIS = tuple([str(i / 10.0) for i in range(-10, 105, 5)])
+
 
 def FILEDIALOG_SUPPORTED_FILES():
     # returns all valid file types for use in tkinter filedialog
@@ -59,5 +64,6 @@ def FILEDIALOG_SUPPORTED_FILES():
         filetypes.append(('{} Files'.format(c.value.upper()), '*.{}'.format(c.value)))
 
     return(tuple(filetypes))
+
 
 SUPPORTED_EXT = tuple('.{}'.format(c.value) for c in Codecs)

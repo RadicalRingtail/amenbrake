@@ -6,6 +6,7 @@ def hash_file(input_file):
     with open(input_file, 'rb') as open_file:
         return hashlib.md5(open_file.read()).digest()   
 
+
 def remove_dup_files(path):
     # removes all duplicate files in a given path
 
