@@ -4,6 +4,8 @@ from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
 from converter import Converter, Metadata
 import helpers
+import tkinter as tk
+from tkinter import ttk
 
 
 class Track:
@@ -26,6 +28,26 @@ class Group(helpers.Common):
         self.cover_art = None
         self.tracks = None
         self.temp_path = None
+
+
+class ProgressWindow(tk.Toplevel):
+    # creates a new toplevel window with a progress bar
+
+    def __init__(self):
+        super().__init__()
+        self.title('Importing items..')
+        self.geometry('400x100')
+        
+        self.current_status = tk.Label(self, text='Importing...')
+        self.progress_bar = ttk.Progressbar(self, orient='horizontal', length='300', mode='indeterminate')
+
+        self.current_status.pack(expand=True, fill='y')
+        self.progress_bar.pack(expand=True, fill='y')
+        self.update()
+
+    def close(self):
+        self.destroy()
+        self.update()
 
 
 class Application():
@@ -60,11 +82,15 @@ class Application():
                     files.append(os.path.join(folder, f))
 
             files = tuple(files)
+        
+        self.progress_window = ProgressWindow()
 
         imported_tracks = self.create_track_objects(files)
         self.create_group(imported_tracks)
 
         self.debug_groups()
+
+        self.progress_window.close()
 
 
     def create_track_objects(self, paths):

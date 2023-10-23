@@ -1,4 +1,4 @@
-# ThinkBrake
+# AmenBrake
 [![GitHub](https://img.shields.io/github/license/RadicalRingtail/css-reset)](https://github.com/RadicalRingtail/converter-tool/blob/main/LICENSE.md)
 
 A simple audio transcoder and metadata editor.
@@ -15,6 +15,7 @@ This of course was going to be an issue, since all my masters are wav files, whi
 
 ## Requirements 
 - ``python@3.12``
+- ``python-tk@3.12``
 - ``ffmpeg``
 
 To install dependencies, run ``pip install -r requirements.txt``
