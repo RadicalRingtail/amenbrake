@@ -39,16 +39,16 @@ class Window(tk.Tk):
 
 
     def create_layout(self):
-        Tabs(self)
+        Tabs(self, self.app)
 
 
 class Tabs(ttk.Notebook):
     # instaces the widget for the main window tabs
 
-    def __init__(self, root):
+    def __init__(self, root, app):
         super().__init__()
-        self.add(InputView(), text='Input')
-        self.add(OutputView(), text='Output')
+        self.add(InputView(app), text='Input')
+        self.add(OutputView(app), text='Output')
 
         self.pack()
 
@@ -56,14 +56,16 @@ class Tabs(ttk.Notebook):
 class InputView(tk.Frame):
     # instances the input view frame
 
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         self.pack()
+        self.app = app
 
 
 class OutputView(tk.Frame):
     # instances the Output view frame
 
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         self.pack()
+        self.app = app

@@ -2,7 +2,7 @@ import os, ffmpeg, tempfile
 from pathlib import Path
 from tkinter import filedialog
 from support import FILEDIALOG_SUPPORTED_FILES, SUPPORTED_EXT, Codecs
-from converter import Metadata
+from converter import Converter, Metadata
 import helpers
 
 
@@ -16,8 +16,8 @@ class Track:
         self.metadata = None
 
 
-class Group:
-    # instances a group object (album)
+class Group(helpers.Common):
+    # instances a group object
 
     def __init__(self):
         self.album = None
@@ -34,7 +34,7 @@ class Application():
     def __init__(self):
         self.temp_folder = tempfile.TemporaryDirectory()
         self.group_queue = {}
-        self.format_queue = {}
+        self.transcode_queue = {}
     
 
     def exit(self):
@@ -147,6 +147,17 @@ class Application():
                 print(e.stderr.decode('utf8'))
 
 
+    def add_transcode_job(self, settings):
+        # takes in settings from the front end and instances a converter object, then adds it to the queue
+
+        job = Converter()
+        job_id = id(job)
+        job.set_data(settings)
+
+        self.transcode_queue[job_id] = job
+        print(self.transcode_queue)
+
+
     def debug_groups(self):
         # just to check if all the data is correct
         print(self.group_queue)
@@ -156,3 +167,9 @@ class Application():
             for track in group.tracks:
 
                 print(track.__dict__)
+
+m = Metadata()
+
+m.set_data({'title':'test'})
+
+print(m.title)

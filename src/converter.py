@@ -1,8 +1,10 @@
 import ffmpeg, os
 from support import Codecs, Bitrates, Samplerates, Encoders, Quality
+import helpers
 
-class Metadata:
-    # creates a metadata object that can be returned as valid metadata for ffmpeg
+
+class Metadata(helpers.Common):
+    # instances a metadata object that can be returned as valid metadata for ffmpeg
 
     def __init__(self):
         self.title = None
@@ -26,16 +28,10 @@ class Metadata:
         return metadata
 
 
-    def set_data(self, data):
-        for key, tag in self.__dict__.items():
-            if key in data.keys():
-                setattr(self, key, data[key])
-
-
-class Converter:
+class Converter(helpers.Common):
     # creates a new conversion job with specified settings that can be executed on multiple files
 
-    def __init__(self, codec: Codecs, output_loc: str):
+    def __init__(self):
 
             self.output_loc = output_loc
 

@@ -20,3 +20,12 @@ def remove_dup_files(path):
             files.append(file_hash)
         else:
             os.remove(full_path)
+
+
+class Common:
+    # contains common methods used in other classses
+
+    def set_data(self, data: dict):
+            for key, tag in self.__dict__.items():
+                if key in data.keys():
+                    setattr(self, key, data[key])
