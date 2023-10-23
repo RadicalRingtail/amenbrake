@@ -167,9 +167,3 @@ class Application():
             for track in group.tracks:
 
                 print(track.__dict__)
-
-m = Metadata()
-
-m.set_data({'title':'test'})
-
-print(m.title)
