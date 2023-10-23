@@ -35,6 +35,7 @@ class Application():
         self.temp_folder = tempfile.TemporaryDirectory()
         self.group_queue = {}
         self.transcode_queue = {}
+        self.file_name_format = '{title}'
     
 
     def exit(self):
@@ -162,7 +163,15 @@ class Application():
 
         for group_id, group in self.group_queue.items():
             for job_id, job in self.transcode_queue.items():
-                pass
+
+                for track in group.tracks:
+
+                    job.convert(
+                        track.path,
+                        track.cover_art,
+                        track.metadata,
+                        self.file_name_format
+                    )
 
 
     def debug_groups(self):

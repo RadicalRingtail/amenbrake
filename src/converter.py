@@ -33,7 +33,7 @@ class Converter(helpers.Common):
 
     def __init__(self):
 
-            self.output_loc = '/'
+            self.output_loc = ''
             self.codec = Codecs.MP3
             self.bitrate = Bitrates.B_320
             self.samplerate = Samplerates.S_44
@@ -60,7 +60,7 @@ class Converter(helpers.Common):
             'ar':self.samplerate.value
                 }
 
-        name_format = file_out_name.format(helpers.FormatFilter(metadata.__dict__))
+        name_format = file_out_name.format_map(helpers.FormatFilter(metadata.__dict__)) + '.' + self.codec.value
         path = os.path.join(self.output_loc, name_format)
 
         audio = ffmpeg.input(input_file).audio
