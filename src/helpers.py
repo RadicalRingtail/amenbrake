@@ -29,3 +29,10 @@ class Common:
             for key, tag in self.__dict__.items():
                 if key in data.keys():
                     setattr(self, key, data[key])
+
+
+class FormatFilter(dict):
+    # for string formating
+
+    def __missing__(self, key):
+        return '{' + key + '}'

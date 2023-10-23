@@ -33,17 +33,16 @@ class Converter(helpers.Common):
 
     def __init__(self):
 
-            self.output_loc = output_loc
-
-            self.codec = codec
+            self.output_loc = '/'
+            self.codec = Codecs.MP3
             self.bitrate = Bitrates.B_320
             self.samplerate = Samplerates.S_44
-            self.encoder = None
+            self.encoder = Encoders.LIBMP3LAME
             self.vbr = False
             self.quality = None
 
 
-    def convert(self, input_file: str, cover_art: str, metadata: Metadata):
+    def convert(self, input_file, cover_art, metadata: Metadata, file_out_name):
         # transcodes, adds metadata/cover art, sets encoding options
 
         # todo: aac support
@@ -61,7 +60,8 @@ class Converter(helpers.Common):
             'ar':self.samplerate.value
                 }
 
-        path = os.path.join(self.output_loc, "{0}.{1}".format(metadata.title, self.codec.value))
+        name_format = file_out_name.format(helpers.FormatFilter(metadata.__dict__))
+        path = os.path.join(self.output_loc, name_format)
 
         audio = ffmpeg.input(input_file).audio
         cover = ffmpeg.input(cover_art, pix_fmt='yuvj420p')

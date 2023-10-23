@@ -157,6 +157,13 @@ class Application():
         self.transcode_queue[job_id] = job
         print(self.transcode_queue)
 
+    def start_queue(self):
+        # starts transcode queue
+
+        for group_id, group in self.group_queue.items():
+            for job_id, job in self.transcode_queue.items():
+                pass
+
 
     def debug_groups(self):
         # just to check if all the data is correct

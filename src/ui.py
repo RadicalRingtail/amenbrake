@@ -61,6 +61,9 @@ class InputView(tk.Frame):
         self.pack()
         self.app = app
 
+        button = tk.Button(text='add job', command=lambda: self.app.add_transcode_job({})).pack()
+        button = tk.Button(text='start queue', command=self.app.start_queue).pack()
+
 
 class OutputView(tk.Frame):
     # instances the Output view frame
