@@ -4,6 +4,7 @@ from tkinter import filedialog
 from pathlib import Path
 
 from app import Application
+from support import Codecs
 
 
 class Window(tk.Tk):
@@ -56,8 +57,8 @@ class Tabs(ttk.Notebook):
         self.input_view = InputView(app)
         self.output_view = OutputView(app)
 
-        self.add(self.input_view, text='Input')
-        self.add(self.output_view, text='Output')
+        self.add(self.input_view, text='Import')
+        self.add(self.output_view, text='Encoder')
 
         self.bind('<<NotebookTabChanged>>', lambda update: root.update_idletasks())
 
@@ -71,39 +72,66 @@ class InputView(tk.Frame):
         super().__init__()
         self.app = app
 
-        self.create_tree()
+        self.tree = ImportTree(self, app)
 
-        button = tk.Button(self, text='add job', command=lambda: self.app.add_transcode_job({})).pack()
         button2 = tk.Button(self, text='start queue', command=self.app.start_queue).pack()
 
         self.pack()
 
-    def create_tree(self):
-        columns = ('filename', 'location')
-
-        self.tree = ttk.Treeview(self, columns=columns)
-
-        self.tree.column('#0', width=20, stretch=False)
-
-        self.tree.heading('filename', text='Filename')
-        self.tree.heading('location', text='Location')
-
-        self.tree.pack(expand=True, fill='both')
-    
-    def update_tree(self):
-        for key, item in self.app.group_queue.items():
-            item_index = str(key)
-            group_item = self.tree.insert(parent='', index='end', values=[item_index, ''])
-
-            for track in item.tracks:
-
-                track_filename = Path(track.path).name
-                self.tree.insert(parent=group_item, index='end', values=[track_filename, track.path])
 
 class OutputView(tk.Frame):
     # instances the Output view frame
 
     def __init__(self, app):
         super().__init__()
-        self.pack()
         self.app = app
+
+        add_job_button = tk.Button(self, text='Add transcode job..', command=self.create_encoder_options)
+        add_job_button.pack()
+
+        self.pack()
+
+    def create_encoder_options(self):
+        option = EncoderOptions(self, self.app)
+
+
+class ImportTree(ttk.Treeview):
+    # widget that shows imported tracks and groups
+
+    def __init__(self, root, app):
+        super().__init__(master=root)
+        self.app = app
+
+        self['columns'] = ('filename', 'location')
+
+        self.column('#0', width=20, stretch=False)
+
+        self.heading('filename', text='Filename')
+        self.heading('location', text='Location')
+
+        self.pack(expand=True, fill='both')
+
+    def update_tree(self):
+        for key, item in self.app.group_queue.items():
+            item_index = str(key)
+            group_item = self.insert(parent='', index='end', values=[item_index, ''])
+
+            for track in item.tracks:
+
+                track_filename = Path(track.path).name
+                self.insert(parent=group_item, index='end', values=[track_filename, track.path])
+
+
+class EncoderOptions(tk.Frame):
+    # widget that gives you encoding options for a transcode job in queue
+
+    def __init__(self, root, app):
+        super().__init__(master=root, bg='gainsboro')
+        self.app = app
+
+        self.app.add_transcode_job({})
+        
+        self.codec = ttk.Combobox(self, values=tuple(item.value for item in Codecs), state='readonly')
+        self.codec.pack(expand=True, padx=(10,10), pady=(10,10))
+
+        self.pack(fill='x', padx=(10,10), pady=(10,10))
