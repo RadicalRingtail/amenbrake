@@ -14,7 +14,7 @@ class Window(tk.Tk):
         super().__init__()
         self.app = Application()
 
-        self.title('converter tool')
+        self.title('AmenBrake')
         self.geometry('800x600')
         self.protocol('WM_DELETE_WINDOW', self.on_close)
         
