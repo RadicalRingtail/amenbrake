@@ -74,8 +74,6 @@ class InputView(tk.Frame):
 
         self.tree = ImportTree(self, app)
 
-        button2 = tk.Button(self, text='start queue', command=self.app.start_queue).pack()
-
         self.pack()
 
 
@@ -156,7 +154,7 @@ class EncoderOptions(tk.Frame):
     def output_widget(self):
         frame = tk.Frame(self)
 
-        output_label = tk.Label(frame, text='Output Location:')
+        output_label = tk.Label(frame, text='Output Location')
         output_entry = tk.Entry(frame, textvariable=self.output)
         directory_button = tk.Button(frame, text='Select', command=self.on_directory_button)
 
