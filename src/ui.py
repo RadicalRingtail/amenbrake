@@ -78,31 +78,62 @@ class InputView(tk.Frame):
         super().__init__()
         self.app = app
 
+        self.editor = EditorWidget(self, app)
         self.tree = ImportTree(self, app)
 
         self.pack()
 
 
-class OutputView(tk.Frame):
-    # instances the Output view frame
+class EditorWidget(tk.Frame):
+    # widget that contains metadata editing tools
 
-    def __init__(self, app):
-        super().__init__()
+    def __init__(self, root, app):
+        super().__init__(master=root)
+        self.rowconfigure(4)
+        self.columnconfigure(4)
         self.app = app
-        self.encoder_widgets = {}
 
-        add_job_button = tk.Button(self, text='Add format..', command=self.create_encoder_options)
-        add_job_button.pack()
+        self.title = tk.StringVar()
+        self.artist = tk.StringVar()
+        self.date = tk.StringVar()
+        self.album = tk.StringVar()
+        self.track_number = tk.StringVar()
+        self.album_artist = tk.StringVar()
+        self.comment = tk.StringVar()
 
-        self.pack()
+        label_title = tk.Label(text='Title')
+        entry_title = tk.Entry(self, textvariable=self.title)
+
+        label_artist = tk.Label(text='Artist')
+        entry_artist = tk.Entry(self, textvariable=self.artist)
+
+        label_date = tk.Label(text='Date')
+        entry_date = tk.Entry(self, textvariable=self.date)
+
+        label_album = tk.Label(text='Album')
+        entry_album = tk.Entry(self, textvariable=self.album)
+
+        label_track = tk.Label(text='Track Number')
+        entry_track = tk.Entry(self, textvariable=self.track_number)
+
+        label_album_artist = tk.Label(text='Album Artist')
+        entry_album_artist = tk.Entry(self, textvariable=self.album_artist)
+
+        label_comment = tk.Label(text='Comment')
+        entry_comment = tk.Text(self, height=5)
 
 
-    def create_encoder_options(self):
-        option = EncoderOptions(self, self.app)
-        job = self.app.add_transcode_job({})
+        entry_artist.grid(column=1, row=1, sticky='nsew')
+        entry_album_artist.grid(column=2, row=1, sticky='nsew')
+        entry_date.grid(column=3, row=1, sticky='nsew')
 
-        self.encoder_widgets[job] = option
-        print(self.encoder_widgets)
+        entry_album.grid(column=1, row=2, sticky='nsew')
+        entry_track.grid(column=2, row=2, sticky='nsew')
+        entry_title.grid(column=3, row=2, sticky='nsew')
+
+        entry_comment.grid(column=1, row=3, columnspan=3, rowspan=2, sticky='nsew')
+
+        self.pack(expand=False, fill='x')
 
 
 class ImportTree(ttk.Treeview):
@@ -147,6 +178,28 @@ class ImportTree(ttk.Treeview):
                     self.insert(parent=group_item, index='end', values=[track_filename, track.path], tags=('odd',))
 
                 track_index += 1
+
+
+class OutputView(tk.Frame):
+    # instances the Output view frame
+
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+        self.encoder_widgets = {}
+
+        add_job_button = tk.Button(self, text='Add format..', command=self.create_encoder_options)
+        add_job_button.pack()
+
+        self.pack()
+
+
+    def create_encoder_options(self):
+        option = EncoderOptions(self, self.app)
+        job = self.app.add_transcode_job({})
+
+        self.encoder_widgets[job] = option
+        print(self.encoder_widgets)
 
 
 class EncoderOptions(tk.Frame):

@@ -3,6 +3,14 @@
 
 A simple audio transcoder and metadata editor.
 
+![AmenBrake Screenshot](image.png)
+
+----------------
+
+## About
+
+AmenBrake is a python based GUI wrapper for ffmpeg that allows you to transcode batches of audio files and edit or add metadata and cover art.
+
 ----------------
 
 ## Motivation
