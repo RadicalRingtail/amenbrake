@@ -98,7 +98,7 @@ class Application():
     def create_track_objects(self, paths):
         # creates a list of track objects
 
-        track_objects = []
+        track_objects = {}
 
         for path in paths:
             self.progress_window.current_item.set('Importing ' + Path(path).name)
@@ -116,7 +116,7 @@ class Application():
 
             track.metadata = metadata
 
-            track_objects.append(track)
+            track_objects[str(id(track))] = track
 
         return track_objects
 
@@ -159,7 +159,7 @@ class Application():
         
         index = 0
 
-        for track in group.tracks:
+        for key, track in group.tracks.items():
             
             file_name = '{0}_{1}.jpg'.format(Path(track.path).stem, str(index))
             file_output = os.path.join(group.temp_path, file_name)
@@ -198,7 +198,7 @@ class Application():
         for group_id, group in self.group_queue.items():
             for job_id, job in self.transcode_queue.items():
 
-                for track in group.tracks:
+                for key, track in group.tracks.items():
 
                     job.convert(
                         track.path,
@@ -214,6 +214,6 @@ class Application():
         for key, group in self.group_queue.items():
             print(group.__dict__)
 
-            for track in group.tracks:
+            for key, track in group.tracks.items():
 
                 print(track.__dict__)
