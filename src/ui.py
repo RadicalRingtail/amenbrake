@@ -90,7 +90,6 @@ class InputView(tk.Frame):
         self.app = app
 
         self.editor = EditorWidget(self, app)
-        self.tree = ImportTree(self, app)
 
         self.pack()
 
@@ -145,6 +144,9 @@ class EditorWidget(tk.Frame):
         entry_comment.grid(column=1, row=3, columnspan=3, rowspan=2, sticky='nsew')
 
         self.pack(expand=False, fill='x')
+
+        # moved this here for now
+        self.tree = ImportTree(root, app)
 
 
 class ImportTree(ttk.Treeview):
@@ -271,7 +273,7 @@ class EncoderOptions(tk.Frame):
         frame = tk.Frame(self)
 
         output_label = tk.Label(frame, text='Output Location')
-        output_entry = tk.Entry(frame, textvariable=self.output)
+        output_entry = ttk.Entry(frame, textvariable=self.output)
         directory_button = tk.Button(frame, text='Select', command=self.on_directory_button)
 
 

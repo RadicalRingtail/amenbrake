@@ -85,14 +85,19 @@ class Application():
 
             files = tuple(files)
         
-        self.progress_window = ProgressWindow()
+        if files:
+        
+            self.progress_window = ProgressWindow()
 
-        imported_tracks = self.create_track_objects(files)
-        self.create_group(imported_tracks)
+            imported_tracks = self.create_track_objects(files)
+            self.create_group(imported_tracks)
 
-        self.debug_groups()
+            self.debug_groups()
 
-        self.progress_window.close()
+            self.progress_window.close()
+        
+        else:
+            pass
 
 
     def create_track_objects(self, paths):
