@@ -179,11 +179,12 @@ class Application():
         # takes in settings from the front end and instances a converter object, then adds it to the queue
 
         job = Converter()
-        job_id = id(job)
+        job_id = str(id(job))
         job.set_data(settings)
 
         self.transcode_queue[job_id] = job
-        print(self.transcode_queue)
+        
+        return(job_id)
 
 
     def start_queue(self):

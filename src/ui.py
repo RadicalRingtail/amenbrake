@@ -4,7 +4,7 @@ from tkinter import filedialog
 from pathlib import Path
 
 from app import Application
-from support import Codecs
+from support import Codecs, Samplerates
 
 
 class Window(tk.Tk):
@@ -29,7 +29,7 @@ class Window(tk.Tk):
 
     def on_import_file(self, import_type):
         self.app.import_files(import_type)
-        self.main.input_view.update_tree()
+        self.main.input_view.tree.update_tree()
     
 
     def create_menu(self):
@@ -85,14 +85,19 @@ class OutputView(tk.Frame):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.encoder_widgets = {}
 
-        add_job_button = tk.Button(self, text='Add transcode job..', command=self.create_encoder_options)
+        add_job_button = tk.Button(self, text='Add format..', command=self.create_encoder_options)
         add_job_button.pack()
 
         self.pack()
 
     def create_encoder_options(self):
         option = EncoderOptions(self, self.app)
+        job = self.app.add_transcode_job({})
+
+        self.encoder_widgets[job] = option
+        print(self.encoder_widgets)
 
 
 class ImportTree(ttk.Treeview):
@@ -129,9 +134,38 @@ class EncoderOptions(tk.Frame):
         super().__init__(master=root, bg='gainsboro')
         self.app = app
 
-        self.app.add_transcode_job({})
+        self.codec = tk.StringVar()
+        self.samplerate = tk.StringVar()
+        self.output = tk.StringVar()
         
-        self.codec = ttk.Combobox(self, values=tuple(item.value for item in Codecs), state='readonly')
-        self.codec.pack(expand=True, padx=(10,10), pady=(10,10))
+        self.common_settings()
+        self.output_widget()
 
         self.pack(fill='x', padx=(10,10), pady=(10,10))
+
+    def common_settings(self):
+        codec_dropdown = ttk.Combobox(self, textvariable=self.codec, values=Codecs.as_list(), state='readonly')
+        codec_dropdown.current(0)
+
+        samplerate_dropdown = ttk.Combobox(self, textvariable=self.samplerate, values=Samplerates.as_list())
+        samplerate_dropdown.current(0)
+
+        codec_dropdown.pack(expand=True, padx=(10,10), pady=(10,10))
+        samplerate_dropdown.pack(expand=True, padx=(10,10), pady=(10,10))
+
+    def output_widget(self):
+        frame = tk.Frame(self)
+
+        output_label = tk.Label(frame, text='Output Location:')
+        output_entry = tk.Entry(frame, textvariable=self.output)
+        directory_button = tk.Button(frame, text='Select', command=self.on_directory_button)
+
+
+        output_label.pack()
+        output_entry.pack()
+        directory_button.pack()
+        frame.pack(fill='x', padx=(10,10), pady=(10,10))
+
+    def on_directory_button(self):
+        directory = filedialog.askdirectory(title='Select folder..')
+        self.output.set(directory)

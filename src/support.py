@@ -3,11 +3,15 @@ from enum import Enum
 # contains enums and other constants that are used across the application
 
 class Codecs(Enum):
-    WAV = 'wav'
     MP3 = 'mp3'
     FLAC = 'flac'
-    AIFF = 'aiff'
     OGG = 'ogg'
+    AIFF = 'aiff'
+    WAV = 'wav'
+
+    @classmethod
+    def as_list(cls):
+        return(tuple(item.value for item in cls))
 
 
 class Bitrates(Enum):
@@ -27,6 +31,10 @@ class Bitrates(Enum):
     B_256 = '256k'
     B_320 = '320k'
 
+    @classmethod
+    def as_list(cls):
+        return(tuple(item.value for item in cls))
+
 
 class Samplerates(Enum):
     S_8 = '8000'
@@ -39,12 +47,20 @@ class Samplerates(Enum):
     S_44 = '44100'
     S_48 = '48000'
 
+    @classmethod
+    def as_list(cls):
+        return(tuple(item.value for item in cls))
+
 
 class Encoders(Enum):
     LIBMP3LAME = 'libmp3lame'
     FLAC = 'flac'
     VORBIS = 'libvorbis'
     PCM_16 = 'pcm_s16be'
+
+    @classmethod
+    def as_list(cls):
+        return(tuple(item.value for item in cls))
 
 
 class Quality(Enum):
