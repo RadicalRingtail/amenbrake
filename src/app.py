@@ -22,12 +22,9 @@ class Group(helpers.Common):
     # instances a group object
 
     def __init__(self):
-        self.album = None
-        self.album_artist = None
-        self.date = None
-        self.cover_art = None
         self.tracks = None
         self.temp_path = None
+        self.metadata = None
 
 
 class ProgressWindow(tk.Toplevel):
@@ -136,11 +133,16 @@ class Application():
         group.temp_path = os.path.join(self.temp_folder.name, group_id)
         os.mkdir(group.temp_path)
 
+        metadata = Metadata()
+
+        group.metadata = metadata
+
         self.get_cover_art(group)
 
         images = Path(group.temp_path).glob('*.jpg')
         image_list = list(i for i in images)
 
+        # gets first image gotten in temp cover art folder
         if not image_list:
             pass
         else:

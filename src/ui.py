@@ -68,7 +68,7 @@ class Window(tk.Tk):
         if platform.system() == 'Windows':
             self.style.theme_use('vista')
 
-        self.style.configure("TNotebook", tabposition='n')
+        self.style.configure('TNotebook', tabposition='n', padx=10, pady=10)
         self.style.configure('Treeview', rowheight=30)
 
 
@@ -106,9 +106,10 @@ class EditorWidget(tk.Frame):
 
     def __init__(self, root, app):
         super().__init__(master=root)
-        self.rowconfigure(4)
-        self.columnconfigure(4)
         self.app = app
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
 
         self.title = tk.StringVar()
         self.artist = tk.StringVar()
@@ -118,42 +119,32 @@ class EditorWidget(tk.Frame):
         self.album_artist = tk.StringVar()
         self.comment = tk.StringVar()
 
-        label_title = tk.Label(text='Title')
-        entry_title = tk.Entry(self, textvariable=self.title)
+        self.create_entry_widget('Title:', self.title)
+        self.create_entry_widget('Artist:', self.artist)
+        self.create_entry_widget('Date:', self.date)
+        self.create_entry_widget('Album:', self.album)
+        self.create_entry_widget('Track Number:', self.track_number)
+        self.create_entry_widget('Album Artist:', self.album_artist)
 
-        label_artist = tk.Label(text='Artist')
-        entry_artist = tk.Entry(self, textvariable=self.artist)
-
-        label_date = tk.Label(text='Date')
-        entry_date = tk.Entry(self, textvariable=self.date)
-
-        label_album = tk.Label(text='Album')
-        entry_album = tk.Entry(self, textvariable=self.album)
-
-        label_track = tk.Label(text='Track Number')
-        entry_track = tk.Entry(self, textvariable=self.track_number)
-
-        label_album_artist = tk.Label(text='Album Artist')
-        entry_album_artist = tk.Entry(self, textvariable=self.album_artist)
-
-        label_comment = tk.Label(text='Comment')
-        entry_comment = tk.Text(self, height=5)
-
-
-        entry_artist.grid(column=1, row=1, sticky='nsew')
-        entry_album_artist.grid(column=2, row=1, sticky='nsew')
-        entry_date.grid(column=3, row=1, sticky='nsew')
-
-        entry_album.grid(column=1, row=2, sticky='nsew')
-        entry_track.grid(column=2, row=2, sticky='nsew')
-        entry_title.grid(column=3, row=2, sticky='nsew')
-
-        entry_comment.grid(column=1, row=3, columnspan=3, rowspan=2, sticky='nsew')
-
-        self.pack(expand=False, fill='x')
+        self.pack(fill='x')
 
         # moved this here for now
         self.tree = ImportTree(root, app)
+
+    def create_entry_widget(self, name, textvariable):
+        widget_frame = tk.Frame(self)
+        widget_frame.columnconfigure(0, weight=1)
+        widget_frame.columnconfigure(1, weight=2)
+        widget_frame.rowconfigure(0, weight=1)
+
+        label = ttk.Label(widget_frame, text=name).grid(column=0,row=0)
+        entry = ttk.Entry(widget_frame, textvariable=textvariable).grid(column=1, row=0, sticky='ew')
+
+        widget_frame.grid(column=0, sticky='nsew')
+
+    def set_data(self):
+
+        self.title.set(tree.current_selected_item)
 
 
 class ImportTree(ttk.Treeview):
@@ -187,7 +178,7 @@ class ImportTree(ttk.Treeview):
         current_group = self.parent(current_selection)
 
         if 'group' in selected_data['tags']:
-            self.current_selected_item = self.app.group_queue[current_selection]
+            self.current_selected_item = self.app.group_queue[current_selection].metadata
 
         elif 'track' in selected_data['tags']:
             self.current_selected_item = self.app.group_queue[current_group].tracks[current_selection]
@@ -295,3 +286,6 @@ class EncoderOptions(tk.Frame):
 
         directory = filedialog.askdirectory(title='Select folder..')
         self.output.set(directory)
+
+    def get_combobox_value(self):
+        pass
