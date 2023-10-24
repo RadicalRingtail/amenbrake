@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from pathlib import Path
+import platform
 
 from app import Application
 from support import Codecs, Samplerates
@@ -33,9 +34,9 @@ class Window(tk.Tk):
 
     def on_import_file(self, import_type):
         # file importer
-        
+        tree = self.main.input_view.editor.tree
         self.app.import_files(import_type)
-        self.main.input_view.tree.update_tree()
+        tree.update_tree()
     
 
     def create_menu(self):
@@ -60,8 +61,14 @@ class Window(tk.Tk):
 
     def create_style(self):
         # slightly edits the default style
+        # todo: fix windows ui theme
 
         self.style = ttk.Style()
+
+        if platform.system() == 'Windows':
+            self.style.theme_use('vista')
+
+        self.style.configure("TNotebook", tabposition='n')
         self.style.configure('Treeview', rowheight=30)
 
 
