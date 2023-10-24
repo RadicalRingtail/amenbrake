@@ -129,7 +129,7 @@ class EditorWidget(tk.Frame):
         self.pack(fill='x')
 
         # moved this here for now
-        self.tree = ImportTree(root, app)
+        self.tree = ImportTree(root, app, self)
 
     def create_entry_widget(self, name, textvariable):
         widget_frame = tk.Frame(self)
@@ -142,18 +142,38 @@ class EditorWidget(tk.Frame):
 
         widget_frame.grid(column=0, sticky='nsew')
 
+    def get_data(self):
+        # gets all metadata from current selected object and fills in the entry feilds with it
+
+        self.title.set(self.tree.current_selected_item.metadata.title)
+        self.artist.set(self.tree.current_selected_item.metadata.artist)
+        self.date.set(self.tree.current_selected_item.metadata.date)
+        self.album.set(self.tree.current_selected_item.metadata.album)
+        self.track_number.set(self.tree.current_selected_item.metadata.track)
+        self.album_artist.set(self.tree.current_selected_item.metadata.album_artist)
+        self.comment.set(self.tree.current_selected_item.metadata.comment)
+
+    
     def set_data(self):
-
-        self.title.set(tree.current_selected_item)
-
+        # sets the metadata of an item to the current field data
+        self.tree.current_selected_item.metadata.title = self.title.get()
+        self.tree.current_selected_item.metadata.artist = self.artist.get()
+        self.tree.current_selected_item.metadata.date = self.date.get()
+        self.tree.current_selected_item.metadata.album = self.album.get()
+        self.tree.current_selected_item.metadata.track = self.track_number.get()
+        self.tree.current_selected_item.metadata.album_artist = self.album_artist.get()
+        self.tree.current_selected_item.metadata.comment = self.comment.get()
+        
 
 class ImportTree(ttk.Treeview):
     # widget that shows imported tracks and groups
 
-    def __init__(self, root, app):
+    def __init__(self, root, app, editor):
         super().__init__(master=root)
         self.app = app
+        self.editor = editor
         self.current_selected_item = None
+        self.previous_selected_item = None
 
         self.tag_configure('even', background='white smoke')
         self.tag_configure('odd', background='gainsboro')
@@ -183,7 +203,9 @@ class ImportTree(ttk.Treeview):
         elif 'track' in selected_data['tags']:
             self.current_selected_item = self.app.group_queue[current_group].tracks[current_selection]
 
-        print(self.current_selected_item)
+        print(str(self.current_selected_item) + ' , ' + str(self.previous_selected_item))
+        self.editor.get_data()
+        self.previous_selected_item = self.current_selected_item
 
 
     def update_tree(self):
@@ -198,7 +220,7 @@ class ImportTree(ttk.Treeview):
             track_index = 0
 
         for key, item in self.app.group_queue.items():
-            group_item = self.insert(parent='', index='end', iid=key, open=True, values=['({0}) {1} - {2}'.format(index, item.album_artist, item.album), ''], tags=('group',))
+            group_item = self.insert(parent='', index='end', iid=key, open=True, values=['({0}) {1} - {2}'.format(index, item.metadata.album_artist, item.metadata.album), ''], tags=('group',))
             index += 1
             print(self.index(group_item))
 
