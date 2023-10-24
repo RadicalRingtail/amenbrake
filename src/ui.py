@@ -17,7 +17,8 @@ class Window(tk.Tk):
         self.title('converter tool')
         self.geometry('800x600')
         self.protocol('WM_DELETE_WINDOW', self.on_close)
-
+        
+        self.create_style()
         self.create_menu()
         self.create_layout()
         
@@ -46,6 +47,11 @@ class Window(tk.Tk):
 
     def create_layout(self):
         self.main = Tabs(self, self.app)
+
+
+    def create_style(self):
+        self.style = ttk.Style()
+        self.style.configure('Treeview', rowheight=30)
 
 
 class Tabs(ttk.Notebook):
@@ -90,6 +96,7 @@ class OutputView(tk.Frame):
 
         self.pack()
 
+
     def create_encoder_options(self):
         option = EncoderOptions(self, self.app)
         job = self.app.add_transcode_job({})
@@ -104,6 +111,8 @@ class ImportTree(ttk.Treeview):
     def __init__(self, root, app):
         super().__init__(master=root)
         self.app = app
+        self.tag_configure('even', background='white smoke')
+        self.tag_configure('odd', background='gainsboro')
 
         self['columns'] = ('filename', 'location')
 
@@ -114,15 +123,30 @@ class ImportTree(ttk.Treeview):
 
         self.pack(expand=True, fill='both')
 
+
     def update_tree(self):
+        index = 0
+        track_index = 0
+
+        for entry in self.get_children():
+            self.delete(entry)
+            index = 0
+            track_index = 0
+
         for key, item in self.app.group_queue.items():
-            item_index = str(key)
-            group_item = self.insert(parent='', index='end', values=[item_index, ''])
+            group_item = self.insert(parent='', index='end', iid=key, open=True, values=['({0}) {1} - {2}'.format(index, item.album_artist, item.album), ''])
+            index += 1
+            print(self.index(group_item))
 
             for track in item.tracks:
-
                 track_filename = Path(track.path).name
-                self.insert(parent=group_item, index='end', values=[track_filename, track.path])
+
+                if track_index % 2 == 0:
+                    self.insert(parent=group_item, index='end', values=[track_filename, track.path], tags=('even',))
+                else:
+                    self.insert(parent=group_item, index='end', values=[track_filename, track.path], tags=('odd',))
+
+                track_index += 1
 
 
 class EncoderOptions(tk.Frame):
@@ -141,6 +165,7 @@ class EncoderOptions(tk.Frame):
 
         self.pack(fill='x', padx=(10,10), pady=(10,10))
 
+
     def common_settings(self):
         codec_dropdown = ttk.Combobox(self, textvariable=self.codec, values=Codecs.as_list(), state='readonly')
         codec_dropdown.current(0)
@@ -150,6 +175,7 @@ class EncoderOptions(tk.Frame):
 
         codec_dropdown.pack(expand=True, padx=(10,10), pady=(10,10))
         samplerate_dropdown.pack(expand=True, padx=(10,10), pady=(10,10))
+
 
     def output_widget(self):
         frame = tk.Frame(self)
@@ -163,6 +189,7 @@ class EncoderOptions(tk.Frame):
         output_entry.pack()
         directory_button.pack()
         frame.pack(fill='x', padx=(10,10), pady=(10,10))
+
 
     def on_directory_button(self):
         directory = filedialog.askdirectory(title='Select folder..')

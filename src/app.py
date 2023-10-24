@@ -37,8 +37,10 @@ class ProgressWindow(tk.Toplevel):
         super().__init__()
         self.title('Importing items..')
         self.geometry('400x100')
+
+        self.current_item = tk.StringVar()
         
-        self.current_status = tk.Label(self, text='Importing...')
+        self.current_status = tk.Label(self, textvariable=self.current_item)
         self.progress_bar = ttk.Progressbar(self, orient='horizontal', length='300', mode='indeterminate')
 
         self.current_status.pack(expand=True, fill='y')
@@ -99,6 +101,9 @@ class Application():
         track_objects = []
 
         for path in paths:
+            self.progress_window.current_item.set('Importing ' + Path(path).name)
+            self.progress_window.update()
+
             probe_data = ffmpeg.probe(path)['format']
 
             current_format = probe_data['format_name']
