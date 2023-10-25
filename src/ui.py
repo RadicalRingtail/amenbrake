@@ -69,12 +69,15 @@ class Window(tk.Tk):
 
         if platform.system() == 'Windows':
             self.style.theme_use('vista')
+            self.style.configure('TNotebook', tabposition='n', padding=[10,0,10,0])
+            self.style.configure('TNotebook.Tab', padding=5)
+            self.style.configure('TButton', padding=5)
+            self.style.configure('TEntry', padding=5)
 
-        self.style.configure('TNotebook', tabposition='n', padx=10, pady=10)
         self.style.configure('Treeview', rowheight=30)
 
 
-class BottomBar(tk.Frame):
+class BottomBar(ttk.Frame):
     # bottom bar widget
 
     def __init__(self, root, app):
@@ -115,7 +118,7 @@ class Tabs(ttk.Notebook):
         self.pack(expand=True, fill='both')
 
 
-class InputView(tk.Frame):
+class InputView(ttk.Frame):
     # instances the input view frame
 
     def __init__(self, app):
@@ -124,18 +127,19 @@ class InputView(tk.Frame):
 
         self.editor = EditorWidget(self, app)
 
-        self.pack()
+        self.pack(pady=50, padx=50)
 
 
-class EditorWidget(tk.Frame):
+class EditorWidget(ttk.Frame):
     # widget that contains metadata editing tools
 
     def __init__(self, root, app):
-        super().__init__(master=root)
+        super().__init__(master=root, padding=10)
         self.app = app
 
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=5)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=5)
 
         self.title = tk.StringVar()
         self.artist = tk.StringVar()
@@ -154,14 +158,16 @@ class EditorWidget(tk.Frame):
         self.create_entry_widget('Track Number:', self.track_number)
         self.create_entry_widget('Album Artist:', self.album_artist)
 
-        self.art_frame = tk.Frame(self, padx=10, pady=10)
+        ttk.Separator(self, orient='vertical').grid(column=1, row=0, rowspan=6, sticky='ns')
+
+        self.art_frame = ttk.Frame(self)
 
         self.art_preview = tk.Label(self.art_frame, image=self.current_art)
         self.art_preview.pack(fill='both')
         clear_art_button = ttk.Button(self.art_frame, text='Clear image..').pack(fill='both', expand=True)
         edit_art_button = ttk.Button(self.art_frame, text='Choose image..').pack(fill='both', expand=True)
 
-        self.art_frame.grid(column=1, row=0, rowspan=6, sticky='nsew')
+        self.art_frame.grid(column=2, row=0, rowspan=6, sticky='nsew')
 
         self.pack(fill='x')
 
@@ -169,7 +175,7 @@ class EditorWidget(tk.Frame):
         self.tree = ImportTree(root, app, self)
 
     def create_entry_widget(self, name, textvariable):
-        widget_frame = tk.Frame(self)
+        widget_frame = ttk.Frame(self, style='Padded.TFrame')
         widget_frame.columnconfigure(0, weight=1)
         widget_frame.columnconfigure(1, weight=1)
         widget_frame.rowconfigure(0, weight=1)
@@ -278,15 +284,15 @@ class ImportTree(ttk.Treeview):
                 track_index += 1
 
 
-class OutputView(tk.Frame):
+class OutputView(ttk.Frame):
     # instances the Output view frame
 
     def __init__(self, app):
-        super().__init__()
+        super().__init__(style='MainFrames.TFrame')
         self.app = app
         self.encoder_widgets = {}
 
-        add_job_button = tk.Button(self, text='Add format..', command=self.create_encoder_options)
+        add_job_button = ttk.Button(self, text='Add format..', command=self.create_encoder_options)
         add_job_button.pack()
 
         self.pack()
@@ -333,14 +339,14 @@ class EncoderOptions(tk.Frame):
     def output_widget(self):
         # for selecting and viewing the output path
 
-        frame = tk.Frame(self)
+        frame = ttk.Frame(self)
 
-        output_label = tk.Label(frame, text='Output Location')
+        output_label = ttk.Label(frame, text='Output Location')
         output_entry = ttk.Entry(frame, textvariable=self.output)
         
         
 
-        directory_button = tk.Button(frame, text='Select', command=self.on_directory_button)
+        directory_button = ttk.Button(frame, text='Select', command=self.on_directory_button)
 
         output_label.pack()
         output_entry.pack()
