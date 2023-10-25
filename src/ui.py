@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from pathlib import Path
-import platform
+import platform, os
 from PIL import Image, ImageTk
 
 from app import Application
@@ -132,6 +132,7 @@ class InputView(ttk.Frame):
 
 class EditorWidget(ttk.Frame):
     # widget that contains metadata editing tools
+    # a lot of the code here is very sloppy and not very efficient, probably needs to be redone
 
     def __init__(self, root, app):
         super().__init__(master=root, padding=10)
@@ -141,6 +142,7 @@ class EditorWidget(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=5)
 
+
         self.title = tk.StringVar()
         self.artist = tk.StringVar()
         self.date = tk.StringVar()
@@ -149,14 +151,14 @@ class EditorWidget(ttk.Frame):
         self.album_artist = tk.StringVar()
         self.comment = tk.StringVar()
 
+        self.entry_widgets = []
         self.current_art = ImageTk.PhotoImage(Image.open('src/images/ui_art_placeholder.png'))
 
-        self.create_entry_widget('Title:', self.title)
-        self.create_entry_widget('Artist:', self.artist)
-        self.create_entry_widget('Date:', self.date)
-        self.create_entry_widget('Album:', self.album)
-        self.create_entry_widget('Track Number:', self.track_number)
-        self.create_entry_widget('Album Artist:', self.album_artist)
+        self.input_frame = ttk.Frame(self)
+        self.input_frame.grid(column=0, row=0, rowspan=6, sticky='nsew')
+
+        for i in self.entry_widgets:
+            i.grid(column=0, sticky='nsew')
 
         ttk.Separator(self, orient='vertical').grid(column=1, row=0, rowspan=6, sticky='ns')
 
@@ -174,8 +176,35 @@ class EditorWidget(ttk.Frame):
         # moved this here for now
         self.tree = ImportTree(root, app, self)
 
-    def create_entry_widget(self, name, textvariable):
-        widget_frame = ttk.Frame(self, style='Padded.TFrame')
+    def create_track_entry(self):
+        for i in self.entry_widgets:
+            i.destroy()
+
+        self.entry_widgets = [
+            self.create_entry_widget(self.input_frame, 'Title:', self.title),
+            self.create_entry_widget(self.input_frame, 'Artist:', self.artist),
+            self.create_entry_widget(self.input_frame, 'Year:', self.date),
+            self.create_entry_widget(self.input_frame, 'Album:', self.album),
+            self.create_entry_widget(self.input_frame, 'Track Number:', self.track_number),
+            self.create_entry_widget(self.input_frame, 'Album Artist:', self.album_artist)
+            ]
+        for i in self.entry_widgets:
+            i.grid(column=0, sticky='nsew')
+
+    def create_album_entry(self):
+        for i in self.entry_widgets:
+            i.destroy()
+
+        self.entry_widgets = [
+            self.create_entry_widget(self.input_frame, 'Artist:', self.album_artist),
+            self.create_entry_widget(self.input_frame, 'Album:', self.album),
+            self.create_entry_widget(self.input_frame, 'Year:', self.date)
+            ]
+        for i in self.entry_widgets:
+            i.grid(column=0, sticky='nsew')
+
+    def create_entry_widget(self, root, name, textvariable):
+        widget_frame = ttk.Frame(root)
         widget_frame.columnconfigure(0, weight=1)
         widget_frame.columnconfigure(1, weight=1)
         widget_frame.rowconfigure(0, weight=1)
@@ -183,13 +212,14 @@ class EditorWidget(ttk.Frame):
         label = ttk.Label(widget_frame, text=name).grid(column=0,row=0, sticky='w')
         entry = ttk.Entry(widget_frame, textvariable=textvariable, width=38).grid(column=1, row=0, sticky='e')
 
-        widget_frame.grid(column=0, sticky='nsew')
+        return(widget_frame)
 
     def get_data(self):
         # gets all metadata from current selected object and fills in the entry feilds with it
-        print(self.tree.current_selected_item.cover_art)
 
-        self.current_art = ImageTk.PhotoImage(Image.open(self.tree.current_selected_item.cover_art).resize((128,128)))
+        preview_image = os.path.splitext(self.tree.current_selected_item.cover_art)[0] + '_resize.jpg'
+
+        self.current_art = ImageTk.PhotoImage(Image.open(preview_image))
 
         self.art_preview.configure(image=self.current_art)
 
@@ -248,9 +278,11 @@ class ImportTree(ttk.Treeview):
 
         if 'group' in selected_data['tags']:
             self.current_selected_item = self.app.group_queue[current_selection]
+            self.editor.create_album_entry()
 
         elif 'track' in selected_data['tags']:
             self.current_selected_item = self.app.group_queue[current_group].tracks[current_selection]
+            self.editor.create_track_entry()
 
         print(str(self.current_selected_item) + ' , ' + str(self.previous_selected_item))
         self.editor.get_data()

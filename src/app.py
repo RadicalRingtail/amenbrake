@@ -6,6 +6,7 @@ from converter import Converter, Metadata
 import helpers
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image
 
 
 class Track:
@@ -171,20 +172,29 @@ class Application():
         index = 0
 
         for key, track in group.tracks.items():
+            self.progress_window.current_item.set('Getting cover art for ' + Path(track.path).name)
+            self.progress_window.update()
+
             
-            file_name = '{0}_{1}.jpg'.format(Path(track.path).stem, str(index))
-            file_output = os.path.join(group.temp_path, file_name)
+            file_name_rip = '{0}_{1}.jpg'.format(Path(track.path).stem, str(index))
+            file_name_resize = '{0}_{1}_resize.jpg'.format(Path(track.path).stem, str(index))
+
+            file_output_rip = os.path.join(group.temp_path, file_name_rip)
+            file_output_resize = os.path.join(group.temp_path, file_name_resize)
 
             try:
                 command = (
                     ffmpeg
                     .input(track.path)
-                    .output(file_output, **{'c:v':'copy', 'frames:v':'1'})
+                    .output(file_output_rip, **{'c:v':'copy', 'frames:v':'1'})
                     .global_args('-an')
                     .run(overwrite_output=True, capture_stderr=True, quiet=True)
                 )
 
-                track.cover_art = file_output
+                track.cover_art = file_output_rip
+
+                resize = Image.open(file_output_rip).resize((128,128))
+                resize.save(file_output_resize)
 
                 index += 1
             except ffmpeg.Error as e:
