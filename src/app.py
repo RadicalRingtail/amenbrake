@@ -24,6 +24,7 @@ class Group(helpers.Common):
     def __init__(self):
         self.tracks = None
         self.temp_path = None
+        self.cover_art = None
         self.metadata = None
 
 
