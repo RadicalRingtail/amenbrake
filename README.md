@@ -5,6 +5,14 @@ A simple audio transcoder and metadata editor.
 
 ![AmenBrake Screenshot](image.png)
 
+- [About](#about)
+- [Requiremnets](#requirements)
+- [Download](#download)
+- [FAQ](#faq)
+- [Report a bug](#report-a-bug)
+- [Contributing](#contributing)
+- [Support this project](#support-this-project)
+
 ----------------
 
 ## About
@@ -30,6 +38,37 @@ To install dependencies, run ``pip install -r requirements.txt``
 
 ----------------
 
+## Download
+
+work in progress
+
+----------------
+
+## FAQ
+
+- ### "No ffmpeg installation found!"
+    You dont have a valid installation of ffmpeg on your system, please install ffmpeg. If you have installed ffmpeg and this still persists, please be sure to check if your installation is working by running ``ffmpeg --version`` in a terminal or command prompt. If the install is valid and this issue is still happening, please fill out a issue.
+
+----------------
+
 ## Known issues
 
 - Windows UI is not finished and may be hard to work with
+
+----------------
+
+## Report a bug
+
+work in progress
+
+----------------
+
+## Contributing
+
+work in progress
+
+----------------
+
+## Support this project
+
+work in progress
