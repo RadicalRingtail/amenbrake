@@ -158,6 +158,7 @@ class EditorWidget(tk.Frame):
 
         self.art_preview = tk.Label(self.art_frame, image=self.current_art)
         self.art_preview.pack(fill='both')
+        clear_art_button = ttk.Button(self.art_frame, text='Clear image..').pack(fill='both', expand=True)
         edit_art_button = ttk.Button(self.art_frame, text='Choose image..').pack(fill='both', expand=True)
 
         self.art_frame.grid(column=1, row=0, rowspan=6, sticky='nsew')
@@ -182,7 +183,7 @@ class EditorWidget(tk.Frame):
         # gets all metadata from current selected object and fills in the entry feilds with it
         print(self.tree.current_selected_item.cover_art)
 
-        self.current_art = ImageTk.PhotoImage(Image.open(self.tree.current_selected_item.cover_art).resize((200,200)))
+        self.current_art = ImageTk.PhotoImage(Image.open(self.tree.current_selected_item.cover_art).resize((128,128)))
 
         self.art_preview.configure(image=self.current_art)
 
@@ -336,8 +337,10 @@ class EncoderOptions(tk.Frame):
 
         output_label = tk.Label(frame, text='Output Location')
         output_entry = ttk.Entry(frame, textvariable=self.output)
-        directory_button = tk.Button(frame, text='Select', command=self.on_directory_button)
+        
+        
 
+        directory_button = tk.Button(frame, text='Select', command=self.on_directory_button)
 
         output_label.pack()
         output_entry.pack()

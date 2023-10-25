@@ -75,11 +75,11 @@ class Application():
         if type == 'file':
             files = filedialog.askopenfilenames(title='Open file(s)', initialdir='/', filetypes=FILEDIALOG_SUPPORTED_FILES())
         elif type == 'folder':
-            folder = filedialog.askdirectory(title='Open folder', initialdir='/')
+            self.folder = filedialog.askdirectory(title='Open folder', initialdir='/')
 
-            for f in os.listdir(folder):
+            for f in os.listdir(self.folder):
                 if f.endswith(SUPPORTED_EXT):
-                    files.append(os.path.join(folder, f))
+                    files.append(os.path.join(self.folder, f))
 
             files = tuple(files)
         
@@ -88,7 +88,7 @@ class Application():
             self.progress_window = ProgressWindow()
 
             imported_tracks = self.create_track_objects(files)
-            self.create_group(imported_tracks)
+            self.create_group(imported_tracks, type)
 
             self.debug_groups()
 
@@ -124,7 +124,7 @@ class Application():
         return track_objects
 
 
-    def create_group(self, tracks):
+    def create_group(self, tracks, import_type):
         # instaces a new group object and adds it to the group_queue
 
         group = Group()
@@ -135,6 +135,9 @@ class Application():
         os.mkdir(group.temp_path)
 
         metadata = Metadata()
+
+        if import_type == 'folder':
+            metadata.album = os.path.basename(self.folder)
 
         group.metadata = metadata
 
