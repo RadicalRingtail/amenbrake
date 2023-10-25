@@ -5,6 +5,10 @@ A simple audio transcoder and metadata editor.
 
 ![AmenBrake Screenshot](image.png)
 
+----------------
+
+## Table of contents
+
 - [About](#about)
 - [Requiremnets](#requirements)
 - [Download](#download)
