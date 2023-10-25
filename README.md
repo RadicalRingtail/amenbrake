@@ -57,7 +57,7 @@ work in progress
 
 ## Known issues
 
-- Windows UI is not finished and may be hard to work with
+- The UI layout can be a bit buggy at times
 
 ----------------
 
