@@ -10,7 +10,7 @@ A simple audio transcoder and metadata editor.
 ## Table of contents
 
 - [About](#about)
-- [Requiremnets](#requirements)
+- [Requirements](#requirements)
 - [Download](#download)
 - [FAQ](#faq)
 - [Report a bug](#report-a-bug)
