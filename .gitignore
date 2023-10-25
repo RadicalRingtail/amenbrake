@@ -11,3 +11,4 @@ __pycache__
 *.flac
 
 tests
+debug
