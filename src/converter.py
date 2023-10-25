@@ -31,7 +31,6 @@ class Metadata(helpers.Common):
 
 class Converter(helpers.Common):
     # creates a new conversion job with specified settings that can be executed on multiple files
-    # todo: fix issues when importing tracks with no metadata
 
     def __init__(self):
 

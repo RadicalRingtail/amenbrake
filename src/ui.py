@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
+from tkinter import ttk, filedialog, messagebox
 from pathlib import Path
 import platform
 from PIL import Image, ImageTk
@@ -17,8 +16,8 @@ class Window(tk.Tk):
         self.app = Application()
 
         self.title('AmenBrake')
-        self.geometry('800x600')
-        self.minsize(800,600)
+        self.geometry('800x700')
+        self.minsize(800,700)
         self.protocol('WM_DELETE_WINDOW', self.on_close)
         
         self.create_style()
@@ -59,6 +58,7 @@ class Window(tk.Tk):
         # might do more with this later
 
         self.main = Tabs(self, self.app)
+        self.bottombar = BottomBar(self, self.app)
 
 
     def create_style(self):
@@ -72,6 +72,30 @@ class Window(tk.Tk):
 
         self.style.configure('TNotebook', tabposition='n', padx=10, pady=10)
         self.style.configure('Treeview', rowheight=30)
+
+
+class BottomBar(tk.Frame):
+    # bottom bar widget
+
+    def __init__(self, root, app):
+        super().__init__(master=root)
+        self.app = app
+
+        self.ui_button_start = ImageTk.PhotoImage(Image.open('src/images/ui_button_start.png').resize((16,16)))
+        
+        start_queue_button = ttk.Button(self, text='Start queue', image=self.ui_button_start, compound='left', command=self.confirm).pack(padx=10, pady=10)
+
+        self.pack(fill='x', expand=False)
+
+    def confirm(self):
+        # asks user before continuing
+
+        confirmation = messagebox.askokcancel(message="Are you sure you want to start the queue?")
+        
+        if confirmation:
+            self.app.start_queue()
+        else:
+            pass
 
 
 class Tabs(ttk.Notebook):
