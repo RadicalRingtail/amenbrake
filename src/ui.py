@@ -121,7 +121,7 @@ class EditorWidget(tk.Frame):
         self.album_artist = tk.StringVar()
         self.comment = tk.StringVar()
 
-        self.current_art = ImageTk.PhotoImage(Image.open('image.png').resize((128,128)))
+        self.current_art = ImageTk.PhotoImage(Image.open('src/images/ui_art_placeholder.png'))
 
         self.create_entry_widget('Title:', self.title)
         self.create_entry_widget('Artist:', self.artist)
