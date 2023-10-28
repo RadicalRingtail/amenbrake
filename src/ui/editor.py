@@ -89,14 +89,16 @@ class EditorWidget(ttk.Frame):
 
         return(widget_frame)
 
-    def get_data(self):
+    def set_feilds(self):
         # gets all metadata from current selected object and fills in the entry feilds with it
+        
+        if self.tree.current_selected_item.cover_art is not None:
+            preview_image = os.path.splitext(self.tree.current_selected_item.cover_art)[0] + '_resize.jpg'
 
-        preview_image = os.path.splitext(self.tree.current_selected_item.cover_art)[0] + '_resize.jpg'
+            self.current_art = ImageTk.PhotoImage(Image.open(preview_image))
+            self.art_preview.configure(image=self.current_art)
 
-        self.current_art = ImageTk.PhotoImage(Image.open(preview_image))
-
-        self.art_preview.configure(image=self.current_art)
+        print(self.tree.current_selected_item)
 
         self.title.set(self.tree.current_selected_item.metadata.title)
         self.artist.set(self.tree.current_selected_item.metadata.artist)
@@ -110,13 +112,13 @@ class EditorWidget(ttk.Frame):
     def set_data(self):
         # sets the metadata of an item to the current field data
 
-        self.tree.current_selected_item.metadata.title = self.title.get()
-        self.tree.current_selected_item.metadata.artist = self.artist.get()
-        self.tree.current_selected_item.metadata.date = self.date.get()
-        self.tree.current_selected_item.metadata.album = self.album.get()
-        self.tree.current_selected_item.metadata.track = self.track_number.get()
-        self.tree.current_selected_item.metadata.album_artist = self.album_artist.get()
-        self.tree.current_selected_item.metadata.comment = self.comment.get()
+        self.tree.previous_selected_item.metadata.title = self.title.get()
+        self.tree.previous_selected_item.metadata.artist = self.artist.get()
+        self.tree.previous_selected_item.metadata.date = self.date.get()
+        self.tree.previous_selected_item.metadata.album = self.album.get()
+        self.tree.previous_selected_item.metadata.track = self.track_number.get()
+        self.tree.previous_selected_item.metadata.album_artist = self.album_artist.get()
+        self.tree.previous_selected_item.metadata.comment = self.comment.get()
         
 
 class ImportTree(ttk.Treeview):
@@ -150,6 +152,9 @@ class ImportTree(ttk.Treeview):
         current_selection = self.selection()[0]
         selected_data = self.item(self.focus())
         current_group = self.parent(current_selection)
+        
+        if self.previous_selected_item is not None:
+            self.editor.set_data()
 
         if 'group' in selected_data['tags']:
             self.current_selected_item = self.app.group_queue[current_selection]
@@ -159,8 +164,7 @@ class ImportTree(ttk.Treeview):
             self.current_selected_item = self.app.group_queue[current_group].tracks[current_selection]
             self.editor.create_track_entry()
 
-        print(str(self.current_selected_item) + ' , ' + str(self.previous_selected_item))
-        self.editor.get_data()
+        self.editor.set_feilds()
         self.previous_selected_item = self.current_selected_item
 
 

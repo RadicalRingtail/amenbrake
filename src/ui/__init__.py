@@ -1,11 +1,9 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-from pathlib import Path
-import platform, os
+from tkinter import ttk, messagebox
+import platform
 from PIL import Image, ImageTk
 
 from app import Application
-from support import Codecs, Samplerates
 from ui import editor, encoder
 
 
@@ -57,8 +55,8 @@ class Window(tk.Tk):
 
     def create_layout(self):
         # might do more with this later
-        self.bottombar = BottomBar(self, self.app)
         self.main = Tabs(self, self.app)
+        self.bottombar = BottomBar(self, self.app)
 
 
     def create_style(self):
@@ -69,7 +67,7 @@ class Window(tk.Tk):
 
         if platform.system() == 'Windows':
             self.style.theme_use('vista')
-            self.style.configure('TNotebook', tabposition='n', padding=[10,0,10,10])
+            self.style.configure('TNotebook', tabposition='n', padding=[10,0,10])
             self.style.configure('TNotebook.Tab', padding=5)
             self.style.configure('TButton', padding=5)
             self.style.configure('TEntry', padding=5)
@@ -86,10 +84,11 @@ class BottomBar(ttk.Frame):
 
         self.ui_button_start = ImageTk.PhotoImage(Image.open('src/images/ui_button_start.png').resize((16,16)))
         self.ui_button_stop = ImageTk.PhotoImage(Image.open('src/images/ui_button_stop.png').resize((16,16)))
+        self.ui_button_log = ImageTk.PhotoImage(Image.open('src/images/ui_button_log.png').resize((16,16)))
         
-        start_queue_button = ttk.Button(self, text='Start queue', image=self.ui_button_start, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left')
-        stop_queue_button = ttk.Button(self, text='Stop queue', image=self.ui_button_stop, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left')
-        show_log_button = ttk.Button(self, text='Show log', image=self.ui_button_start, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left')
+        start_queue_button = ttk.Button(self, text='Start queue', image=self.ui_button_start, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left', fill="none", expand=True)
+        stop_queue_button = ttk.Button(self, text='Stop queue', image=self.ui_button_stop, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left', fill="none", expand=True)
+        show_log_button = ttk.Button(self, text='Show log', image=self.ui_button_log, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left', fill="none", expand=True)
 
         self.pack(fill='x', expand=False)
 
