@@ -83,3 +83,4 @@ def FILEDIALOG_SUPPORTED_FILES():
 
 
 SUPPORTED_EXT = tuple('.{}'.format(c.value) for c in Codecs)
+FILEDIALOG_SUPPORTED_ART = (('PNG', '*.png'), ('JPG', '*.jpg'))

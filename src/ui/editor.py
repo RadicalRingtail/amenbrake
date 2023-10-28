@@ -1,8 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
+from tktooltip import ToolTip
+from tkinter import filedialog
 from pathlib import Path
 import os
 from PIL import Image, ImageTk
+
+from support import FILEDIALOG_SUPPORTED_ART
 
 
 class EditorWidget(ttk.Frame):
@@ -25,9 +29,10 @@ class EditorWidget(ttk.Frame):
         self.track_number = tk.StringVar()
         self.album_artist = tk.StringVar()
         self.comment = tk.StringVar()
+        self.copy_data = tk.BooleanVar()
 
         self.entry_widgets = []
-        self.current_art = ImageTk.PhotoImage(Image.open('src/images/ui_art_placeholder.png'))
+        self.current_art = None
 
         self.input_frame = ttk.Frame(self)
         self.input_frame.grid(column=0, row=0, rowspan=6, sticky='nsew')
@@ -41,8 +46,11 @@ class EditorWidget(ttk.Frame):
 
         self.art_preview = tk.Label(self.art_frame, image=self.current_art)
         self.art_preview.pack(fill='both')
-        clear_art_button = ttk.Button(self.art_frame, text='Clear image..').pack(fill='both', expand=True)
-        edit_art_button = ttk.Button(self.art_frame, text='Choose image..').pack(fill='both', expand=True)
+
+        self.edit_art_button = ttk.Button(self.art_frame, text='Choose image..', state='disabled', command=self.choose_art)
+        self.edit_art_button.pack(fill='both', expand=True)
+        self.clear_art_button = ttk.Button(self.art_frame, text='Clear image..', state='disabled', command=self.clear_art)
+        self.clear_art_button.pack(fill='both', expand=True)
 
         self.art_frame.grid(column=2, row=0, rowspan=6, sticky='nsew')
 
@@ -51,7 +59,11 @@ class EditorWidget(ttk.Frame):
         # moved this here for now
         self.tree = ImportTree(root, app, self)
 
+        self.update_preview()
+
     def create_track_entry(self):
+        # creates album entry widgets
+
         for i in self.entry_widgets:
             i.destroy()
 
@@ -67,18 +79,26 @@ class EditorWidget(ttk.Frame):
             i.grid(column=0, sticky='nsew')
 
     def create_album_entry(self):
+        # creates album entry widgets
+
         for i in self.entry_widgets:
             i.destroy()
+
+        checkbutton = ttk.Checkbutton(self.input_frame, text='Copy group data to tracks', variable=self.copy_data, onvalue=True, offvalue=False)
+        ToolTip(checkbutton, msg='This will overwrite the metadata for album, album artist, and date for the tracks in this group.', delay=1.0)
 
         self.entry_widgets = [
             self.create_entry_widget(self.input_frame, 'Artist:', self.album_artist),
             self.create_entry_widget(self.input_frame, 'Album:', self.album),
-            self.create_entry_widget(self.input_frame, 'Year:', self.date)
+            self.create_entry_widget(self.input_frame, 'Year:', self.date),
+            checkbutton
             ]
         for i in self.entry_widgets:
             i.grid(column=0, sticky='nsew')
 
     def create_entry_widget(self, root, name, textvariable):
+        # creates premade labeled entry widgets
+
         widget_frame = ttk.Frame(root)
         widget_frame.columnconfigure(0, weight=1)
         widget_frame.columnconfigure(1, weight=1)
@@ -92,13 +112,7 @@ class EditorWidget(ttk.Frame):
     def set_feilds(self):
         # gets all metadata from current selected object and fills in the entry feilds with it
         
-        if self.tree.current_selected_item.cover_art is not None:
-            preview_image = os.path.splitext(self.tree.current_selected_item.cover_art)[0] + '_resize.jpg'
-
-            self.current_art = ImageTk.PhotoImage(Image.open(preview_image))
-            self.art_preview.configure(image=self.current_art)
-
-        print(self.tree.current_selected_item)
+        self.update_preview()
 
         self.title.set(self.tree.current_selected_item.metadata.title)
         self.artist.set(self.tree.current_selected_item.metadata.artist)
@@ -119,6 +133,32 @@ class EditorWidget(ttk.Frame):
         self.tree.previous_selected_item.metadata.track = self.track_number.get()
         self.tree.previous_selected_item.metadata.album_artist = self.album_artist.get()
         self.tree.previous_selected_item.metadata.comment = self.comment.get()
+
+    def choose_art(self):
+        art_path = filedialog.askopenfilename(title='Choose cover art..', initialdir='/', filetypes=FILEDIALOG_SUPPORTED_ART)
+        preview_image = self.app.create_preview(art_path, self.tree.selection()[0])
+
+        self.tree.current_selected_item.cover_art = art_path
+        self.tree.current_selected_item.preview_art = preview_image
+
+        self.update_preview()
+
+    def update_preview(self):
+        if self.tree.current_selected_item is not None:
+            if self.tree.current_selected_item.cover_art is not None and self.tree.current_selected_item.preview_art is not None:
+                self.current_art = ImageTk.PhotoImage(Image.open(self.tree.current_selected_item.preview_art))
+            else:
+                self.current_art = ImageTk.PhotoImage(Image.open('src/images/ui_art_placeholder.png'))
+        else:
+            self.current_art = ImageTk.PhotoImage(Image.open('src/images/ui_art_placeholder.png'))
+
+        self.art_preview.configure(image=self.current_art)
+
+    def clear_art(self):
+        self.tree.current_selected_item.cover_art = None
+        self.tree.current_selected_item.preview_art = None
+
+        self.update_preview()
         
 
 class ImportTree(ttk.Treeview):
@@ -152,7 +192,7 @@ class ImportTree(ttk.Treeview):
         current_selection = self.selection()[0]
         selected_data = self.item(self.focus())
         current_group = self.parent(current_selection)
-        
+
         if self.previous_selected_item is not None:
             self.editor.set_data()
 
@@ -166,6 +206,9 @@ class ImportTree(ttk.Treeview):
 
         self.editor.set_feilds()
         self.previous_selected_item = self.current_selected_item
+
+        self.editor.clear_art_button['state'] = 'enabled'
+        self.editor.edit_art_button['state'] = 'enabled'
 
 
     def update_tree(self):

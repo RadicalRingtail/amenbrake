@@ -16,6 +16,7 @@ class Track:
         self.path = path
         self.codec = codec
         self.cover_art = None
+        self.preview_art = None
         self.metadata = None
 
 
@@ -26,6 +27,7 @@ class Group(helpers.Common):
         self.tracks = None
         self.temp_path = None
         self.cover_art = None
+        self.preview_art = None
         self.metadata = None
 
 
@@ -72,17 +74,19 @@ class Application():
         # opens a filedialog and creates a tuple of file paths which are then turned into track objects and added to a group object
 
         files = []
-
         if type == 'file':
             files = filedialog.askopenfilenames(title='Open file(s)', initialdir='/', filetypes=FILEDIALOG_SUPPORTED_FILES())
         elif type == 'folder':
             self.folder = filedialog.askdirectory(title='Open folder', initialdir='/')
 
-            for f in os.listdir(self.folder):
-                if f.endswith(SUPPORTED_EXT):
-                    files.append(os.path.join(self.folder, f))
+            try:
+                for f in os.listdir(self.folder):
+                    if f.endswith(SUPPORTED_EXT):
+                        files.append(os.path.join(self.folder, f))
 
-            files = tuple(files)
+                files = tuple(files)
+            except FileNotFoundError:
+                print('File or folder "{}" does not exist'.format(self.folder))
         
         if files:
         
@@ -105,7 +109,7 @@ class Application():
         track_objects = {}
 
         for path in paths:
-            self.progress_window.current_item.set('Importing ' + Path(path).name)
+            self.progress_window.current_item.set('Importing:\n' + Path(path).name)
             self.progress_window.update()
 
             probe_data = ffmpeg.probe(path)['format']
@@ -172,7 +176,7 @@ class Application():
         index = 0
 
         for key, track in group.tracks.items():
-            self.progress_window.current_item.set('Getting cover art for ' + Path(track.path).name)
+            self.progress_window.current_item.set('Getting cover art for:\n' + Path(track.path).name)
             self.progress_window.update()
 
             
@@ -191,14 +195,26 @@ class Application():
                     .run(overwrite_output=True, capture_stderr=True, quiet=True)
                 )
 
-                track.cover_art = file_output_rip
-
                 resize = Image.open(file_output_rip).resize((128,128))
+                resize.convert('RGB')
                 resize.save(file_output_resize)
+
+                track.cover_art = file_output_rip
+                track.preview_art = file_output_resize
 
                 index += 1
             except ffmpeg.Error as e:
                 print(e.stderr.decode('utf8'))
+
+    def create_preview(self, img_path, item_id):
+
+        file_output = os.path.join(self.temp_folder.name, '{0}_{1}_resize.jpg'.format(Path(img_path).stem, str(item_id)))
+
+        resize = Image.open(img_path).resize((128,128))
+        jpg = resize.convert('RGB')
+        jpg.save(file_output)
+
+        return(file_output)
 
 
     def add_transcode_job(self, settings):

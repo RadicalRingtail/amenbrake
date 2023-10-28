@@ -8,13 +8,13 @@ class Metadata(helpers.Common):
     # instances a metadata object that can be returned as valid metadata for ffmpeg
 
     def __init__(self):
-        self.title = None
-        self.artist = None
-        self.date = None
-        self.album = None
-        self.track = None
-        self.album_artist = None
-        self.comment = None
+        self.title = ''
+        self.artist = ''
+        self.date = ''
+        self.album = ''
+        self.track = ''
+        self.album_artist = ''
+        self.comment = ''
 
 
     def get_data(self):
@@ -22,7 +22,7 @@ class Metadata(helpers.Common):
         index = 0
 
         for key, tag in self.__dict__.items():
-            if tag is not None:
+            if tag is not '':
                 metadata['metadata:g:{}'.format(str(index))] = '{0}={1}'.format(key, str(tag))
                 index += 1
 
