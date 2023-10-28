@@ -11,16 +11,16 @@ from support import FILEDIALOG_SUPPORTED_ART
 
 class EditorWidget(ttk.Frame):
     # widget that contains metadata editing tools
-    # a lot of the code here is very sloppy and not very efficient, probably needs to be redone
+    # a lot of the code here is very sloppy and not very efficient, probably needs to be redone or at least cleaned up
 
     def __init__(self, root, app):
         super().__init__(master=root, padding=10)
         self.app = app
+        self.tree = ImportTree(root, app, self)
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=5)
-
 
         self.title = tk.StringVar()
         self.artist = tk.StringVar()
@@ -54,12 +54,10 @@ class EditorWidget(ttk.Frame):
 
         self.art_frame.grid(column=2, row=0, rowspan=6, sticky='nsew')
 
-        self.pack(fill='x')
-
-        # moved this here for now
-        self.tree = ImportTree(root, app, self)
-
         self.update_preview()
+
+        self.pack(fill='x')
+        self.tree.pack(fill='both', expand=True)
 
     def create_track_entry(self):
         # creates album entry widgets
@@ -182,8 +180,6 @@ class ImportTree(ttk.Treeview):
         self.heading('location', text='Location')
 
         self.bind('<<TreeviewSelect>>', self.select_item)
-
-        self.pack(expand=True, fill='both')
 
 
     def select_item(self, event):

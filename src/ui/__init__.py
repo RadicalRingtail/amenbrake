@@ -86,9 +86,13 @@ class BottomBar(ttk.Frame):
         self.ui_button_stop = ImageTk.PhotoImage(Image.open('src/images/ui_button_stop.png').resize((16,16)))
         self.ui_button_log = ImageTk.PhotoImage(Image.open('src/images/ui_button_log.png').resize((16,16)))
         
-        start_queue_button = ttk.Button(self, text='Start queue', image=self.ui_button_start, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left', fill="none", expand=True)
-        stop_queue_button = ttk.Button(self, text='Stop queue', image=self.ui_button_stop, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left', fill="none", expand=True)
-        show_log_button = ttk.Button(self, text='Show log', image=self.ui_button_log, compound='left', command=self.confirm).pack(padx=10, pady=10, side='left', fill="none", expand=True)
+        start_queue_button = ttk.Button(self, text='Start queue', image=self.ui_button_start, compound='left', command=self.confirm)
+        stop_queue_button = ttk.Button(self, text='Stop queue', image=self.ui_button_stop, compound='left')
+        show_log_button = ttk.Button(self, text='Show log', image=self.ui_button_log, compound='left')
+        
+        start_queue_button.pack(padx=10, pady=10, side='left', fill="none", expand=True)
+        stop_queue_button.pack(padx=10, pady=10, side='left', fill="none", expand=True)
+        show_log_button.pack(padx=10, pady=10, side='left', fill="none", expand=True)
 
         self.pack(fill='x', expand=False)
 

@@ -13,6 +13,7 @@ A simple audio transcoder and metadata editor.
 - [Requirements](#requirements)
 - [Download](#download)
 - [FAQ](#faq)
+- [Known sssues](#known-issues)
 - [Report a bug](#report-a-bug)
 - [Contributing](#contributing)
 - [Support this project](#support-this-project)
@@ -51,7 +52,7 @@ work in progress
 ## FAQ
 
 - ### "No ffmpeg installation found!"
-    You dont have a valid installation of ffmpeg on your system, please install ffmpeg. If you have installed ffmpeg and this still persists, please be sure to check if your installation is working by running ``ffmpeg --version`` in a terminal or command prompt. If the install is valid and this issue is still happening, please fill out a issue.
+    You dont have a valid installation of ffmpeg on your system, please install ffmpeg. If you have installed ffmpeg and this still persists, please be sure to check if your installation is working by running ``ffmpeg --version`` in a terminal or command prompt. If the install is valid and this issue is still happening, please submit an issue.
 
 ----------------
 

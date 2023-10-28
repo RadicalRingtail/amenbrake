@@ -95,8 +95,6 @@ class Application():
             imported_tracks = self.create_track_objects(files)
             self.create_group(imported_tracks, type)
 
-            self.debug_groups()
-
             self.progress_window.close()
         
         else:
