@@ -161,7 +161,7 @@ class Application():
     def add_to_group(self, id, tracks):
         # adds tracks to an existing group
 
-        group = group_queue[id]
+        group = self.group_queue[id]
 
         for new_track in tracks:
             group.tracks.append(new_track)
@@ -202,7 +202,7 @@ class Application():
 
                 index += 1
             except ffmpeg.Error as e:
-                print(e.stderr.decode('utf8'))
+                print('error retrieving cover art')
 
     def create_preview(self, img_path, item_id):
 

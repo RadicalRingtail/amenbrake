@@ -29,7 +29,14 @@ class EditorWidget(ttk.Frame):
         self.track_number = tk.StringVar()
         self.album_artist = tk.StringVar()
         self.comment = tk.StringVar()
-        self.copy_data = tk.BooleanVar()
+
+        self.copy_artist = tk.BooleanVar()
+        self.copy_album = tk.BooleanVar()
+        self.copy_album_artist = tk.BooleanVar()
+        self.copy_year = tk.BooleanVar()
+        self.copy_comment = tk.BooleanVar()
+        self.copy_art = tk.BooleanVar()
+        self.track_indexing = tk.BooleanVar()
 
         self.entry_widgets = []
         self.current_art = None
@@ -71,7 +78,8 @@ class EditorWidget(ttk.Frame):
             self.create_entry_widget(self.input_frame, 'Year:', self.date),
             self.create_entry_widget(self.input_frame, 'Album:', self.album),
             self.create_entry_widget(self.input_frame, 'Track Number:', self.track_number),
-            self.create_entry_widget(self.input_frame, 'Album Artist:', self.album_artist)
+            self.create_entry_widget(self.input_frame, 'Album Artist:', self.album_artist),
+            self.create_entry_widget(self.input_frame, 'Comment:', self.comment)
             ]
         for i in self.entry_widgets:
             i.grid(column=0, sticky='nsew')
@@ -82,14 +90,22 @@ class EditorWidget(ttk.Frame):
         for i in self.entry_widgets:
             i.destroy()
 
-        checkbutton = ttk.Checkbutton(self.input_frame, text='Copy group data to tracks', variable=self.copy_data, onvalue=True, offvalue=False)
-        ToolTip(checkbutton, msg='This will overwrite the metadata for album, album artist, and date for the tracks in this group.', delay=1.0)
+        copy_button = ttk.Button(self.input_frame, text='Copy group data to tracks', command=self.copy_group_data)
+        ToolTip(copy_button, msg='This will overwrite the metadata for album, album artist, and date for the tracks in this group.', delay=1.0)
 
         self.entry_widgets = [
             self.create_entry_widget(self.input_frame, 'Artist:', self.album_artist),
             self.create_entry_widget(self.input_frame, 'Album:', self.album),
             self.create_entry_widget(self.input_frame, 'Year:', self.date),
-            checkbutton
+            self.create_entry_widget(self.input_frame, 'Comment:', self.comment),
+            ttk.Checkbutton(self.input_frame, text='Copy artist data', variable=self.copy_artist, onvalue=True, offvalue=False),
+            ttk.Checkbutton(self.input_frame, text='Copy album data', variable=self.copy_album, onvalue=True, offvalue=False),
+            ttk.Checkbutton(self.input_frame, text='Copy year data', variable=self.copy_year, onvalue=True, offvalue=False),
+            ttk.Checkbutton(self.input_frame, text='Copy album artist data', variable=self.copy_album_artist, onvalue=True, offvalue=False),
+            ttk.Checkbutton(self.input_frame, text='Copy comment data', variable=self.copy_comment, onvalue=True, offvalue=False),
+            ttk.Checkbutton(self.input_frame, text='Copy cover art', variable=self.copy_art, onvalue=True, offvalue=False),
+            ttk.Checkbutton(self.input_frame, text='Assign track number by order in group', variable=self.track_indexing, onvalue=True, offvalue=False),
+            copy_button
             ]
         for i in self.entry_widgets:
             i.grid(column=0, sticky='nsew')
@@ -131,6 +147,33 @@ class EditorWidget(ttk.Frame):
         self.tree.previous_selected_item.metadata.track = self.track_number.get()
         self.tree.previous_selected_item.metadata.album_artist = self.album_artist.get()
         self.tree.previous_selected_item.metadata.comment = self.comment.get()
+
+    def copy_group_data(self):
+
+        for key, track in self.tree.current_selected_item.tracks.items():
+
+            if self.copy_artist.get():
+                track.metadata.artist = self.album_artist.get()
+
+            if self.copy_album_artist.get():
+                track.metadata.album_artist = self.album_artist.get()
+
+            if self.copy_album.get():
+                track.metadata.album = self.album.get()
+                
+            if self.copy_year.get():
+                track.metadata.date = self.date.get()
+
+            if self.copy_year.get():
+                track.metadata.comment = self.comment.get()
+
+            if self.copy_art.get():
+                track.cover_art = self.tree.current_selected_item.cover_art
+                track.preview_art = self.tree.current_selected_item.preview_art
+
+        if self.track_indexing.get():
+            for index, item in enumerate(self.tree.current_selected_item.tracks.items(), start=1):
+                item[1].metadata.track = str(index)
 
     def choose_art(self):
         art_path = filedialog.askopenfilename(title='Choose cover art..', initialdir='/', filetypes=FILEDIALOG_SUPPORTED_ART)
@@ -205,6 +248,9 @@ class ImportTree(ttk.Treeview):
 
         self.editor.clear_art_button['state'] = 'enabled'
         self.editor.edit_art_button['state'] = 'enabled'
+
+        print(self.current_selected_item.__dict__)
+        print(self.current_selected_item.metadata.__dict__)
 
 
     def update_tree(self):
