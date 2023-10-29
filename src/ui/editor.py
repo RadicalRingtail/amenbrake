@@ -65,6 +65,7 @@ class EditorWidget(ttk.Frame):
         self.pack(fill='x')
         self.tree.pack(fill='both', expand=True)
 
+
     def create_track_entry(self):
         # creates album entry widgets
 
@@ -82,6 +83,7 @@ class EditorWidget(ttk.Frame):
             ]
         for i in self.entry_widgets:
             i.grid(column=0, sticky='nsew')
+
 
     def create_album_entry(self):
         # creates album entry widgets
@@ -109,6 +111,7 @@ class EditorWidget(ttk.Frame):
         for i in self.entry_widgets:
             i.grid(column=0, sticky='nsew')
 
+
     def create_entry_widget(self, root, name, textvariable):
         # creates premade labeled entry widgets
 
@@ -121,6 +124,7 @@ class EditorWidget(ttk.Frame):
         entry = ttk.Entry(widget_frame, textvariable=textvariable, width=38).grid(column=1, row=0, sticky='e')
 
         return(widget_frame)
+
 
     def set_feilds(self):
         # gets all metadata from current selected object and fills in the entry feilds with it
@@ -147,7 +151,9 @@ class EditorWidget(ttk.Frame):
         self.tree.previous_selected_item.metadata.album_artist = self.album_artist.get()
         self.tree.previous_selected_item.metadata.comment = self.comment.get()
 
+
     def copy_group_data(self):
+        # copies data to tracks in a group dependin on if checkboxes are enabled or not
 
         for key, track in self.tree.current_selected_item.tracks.items():
 
@@ -174,7 +180,10 @@ class EditorWidget(ttk.Frame):
             for index, item in enumerate(self.tree.current_selected_item.tracks.items(), start=1):
                 item[1].metadata.track = str(index)
 
+
     def choose_art(self):
+        # opens filedialog to get cover art, then sets the cover art path for the selected item and updates the preview
+
         art_path = filedialog.askopenfilename(title='Choose cover art..', initialdir='/', filetypes=FILEDIALOG_SUPPORTED_ART)
         preview_image = self.app.create_preview(art_path, self.tree.selection()[0])
 
@@ -183,7 +192,10 @@ class EditorWidget(ttk.Frame):
 
         self.update_preview()
 
+
     def update_preview(self):
+        # will changes the cover art preview to either the items preview thumbnail, or a placeholder if there is none
+
         if self.tree.current_selected_item is not None:
             if self.tree.current_selected_item.cover_art is not None and self.tree.current_selected_item.preview_art is not None:
                 self.current_art = ImageTk.PhotoImage(Image.open(self.tree.current_selected_item.preview_art))
@@ -194,7 +206,10 @@ class EditorWidget(ttk.Frame):
 
         self.art_preview.configure(image=self.current_art)
 
+
     def clear_art(self):
+        # removes cover art from a selected item
+
         self.tree.current_selected_item.cover_art = None
         self.tree.current_selected_item.preview_art = None
 
@@ -280,6 +295,8 @@ class ImportTree(ttk.Treeview):
 
     
     def remove_items(self):
+        # removes all selected tree items
+
         for item in self.selection():
 
             if 'group' in self.item(item)['tags']:
@@ -291,6 +308,8 @@ class ImportTree(ttk.Treeview):
 
 
     def create_right_click_menu(self, event):
+        # creates a right click menu on the tree
+
         selected_item = self.item(self.identify_row(event.y))
 
         menu = tk.Menu(self, tearoff=0)
@@ -308,6 +327,9 @@ class ImportTree(ttk.Treeview):
         finally: 
             menu.grab_release() 
 
+
     def right_click_import(self, filedialog_type):
+        # imports files and updates tree
+
         self.app.import_files(filedialog_type)
         self.update_tree()
