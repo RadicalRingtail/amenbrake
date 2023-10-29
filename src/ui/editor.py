@@ -3,7 +3,6 @@ from tkinter import ttk
 from tktooltip import ToolTip
 from tkinter import filedialog
 from pathlib import Path
-import os
 from PIL import Image, ImageTk
 
 from support import FILEDIALOG_SUPPORTED_ART
@@ -224,6 +223,9 @@ class ImportTree(ttk.Treeview):
 
         self.bind('<<TreeviewSelect>>', self.select_item)
 
+        self.bind('<Button-2>', self.create_right_click_menu)
+        self.bind('<Button-3>', self.create_right_click_menu)
+
 
     def select_item(self, event):
         # gets current selected item and returns the correct corresponding data from the backend (probably over engineered)
@@ -248,9 +250,6 @@ class ImportTree(ttk.Treeview):
 
         self.editor.clear_art_button['state'] = 'enabled'
         self.editor.edit_art_button['state'] = 'enabled'
-
-        print(self.current_selected_item.__dict__)
-        print(self.current_selected_item.metadata.__dict__)
 
 
     def update_tree(self):
@@ -278,3 +277,37 @@ class ImportTree(ttk.Treeview):
                     self.insert(parent=group_item, index='end', iid=key, values=[track_filename, track.path], tags=('odd', 'track',))
 
                 track_index += 1
+
+    
+    def remove_items(self):
+        for item in self.selection():
+
+            if 'group' in self.item(item)['tags']:
+                del self.app.group_queue[item]
+            elif 'track' in self.item(item)['tags']:
+                del self.app.group_queue[self.parent(item)].tracks[item]
+            
+            self.delete(item)
+
+
+    def create_right_click_menu(self, event):
+        selected_item = self.item(self.identify_row(event.y))
+
+        menu = tk.Menu(self, tearoff=0)
+
+        if 'group' in selected_item['tags']:
+            menu.add_command(label='Remove..', command=self.remove_items)
+        elif 'track' in selected_item['tags']:
+            menu.add_command(label='Remove..', command=self.remove_items)
+        else:
+            menu.add_command(label='Import track(s)..', command=lambda: self.right_click_import('file'))
+            menu.add_command(label='Import folder..', command=lambda: self.right_click_import('folder'))
+
+        try: 
+            menu.tk_popup(event.x_root, event.y_root) 
+        finally: 
+            menu.grab_release() 
+
+    def right_click_import(self, filedialog_type):
+        self.app.import_files(filedialog_type)
+        self.update_tree()
