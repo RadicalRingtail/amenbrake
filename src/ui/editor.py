@@ -305,6 +305,9 @@ class ImportTree(ttk.Treeview):
                 del self.app.group_queue[self.parent(item)].tracks[item]
             
             self.delete(item)
+            
+            for widget in self.editor.entry_widgets:
+                widget.destroy()
 
 
     def create_right_click_menu(self, event):
