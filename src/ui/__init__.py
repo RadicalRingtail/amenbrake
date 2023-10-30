@@ -81,6 +81,7 @@ class BottomBar(ttk.Frame):
     def __init__(self, root, app):
         super().__init__(master=root)
         self.app = app
+        self.root = root
 
         self.ui_button_start = ImageTk.PhotoImage(Image.open('src/images/ui_button_start.png').resize((16,16)))
         self.ui_button_stop = ImageTk.PhotoImage(Image.open('src/images/ui_button_stop.png').resize((16,16)))
@@ -89,7 +90,7 @@ class BottomBar(ttk.Frame):
         start_queue_button = ttk.Button(self, text='Start queue', image=self.ui_button_start, compound='left', command=self.confirm)
         stop_queue_button = ttk.Button(self, text='Stop queue', image=self.ui_button_stop, compound='left')
         show_log_button = ttk.Button(self, text='Show log', image=self.ui_button_log, compound='left')
-        
+
         start_queue_button.pack(padx=10, pady=10, side='left', fill="none", expand=True)
         stop_queue_button.pack(padx=10, pady=10, side='left', fill="none", expand=True)
         show_log_button.pack(padx=10, pady=10, side='left', fill="none", expand=True)
@@ -102,7 +103,7 @@ class BottomBar(ttk.Frame):
         confirmation = messagebox.askokcancel(message="Are you sure you want to start the queue?")
         
         if confirmation:
-            self.app.start_queue()
+            self.root.main.output_view.set_transcode_data()
         else:
             pass
 
@@ -114,7 +115,7 @@ class Tabs(ttk.Notebook):
         super().__init__()
 
         self.input_view = InputView(app)
-        self.output_view = OutputView(app)
+        self.output_view = encoder.OutputView(app)
 
         self.add(self.input_view, text='Import')
         self.add(self.output_view, text='Encoder')
@@ -134,25 +135,3 @@ class InputView(ttk.Frame):
         self.editor = editor.EditorWidget(self, app)
 
         self.pack(pady=50, padx=50)
-
-
-class OutputView(ttk.Frame):
-    # instances the Output view frame
-
-    def __init__(self, app):
-        super().__init__(style='MainFrames.TFrame')
-        self.app = app
-        self.encoder_widgets = {}
-
-        add_job_button = ttk.Button(self, text='Add format..', command=self.create_encoder_options)
-        add_job_button.pack()
-
-        self.pack()
-
-
-    def create_encoder_options(self):
-        option = encoder.EncoderOptions(self, self.app)
-        job = self.app.add_transcode_job({})
-
-        self.encoder_widgets[job] = option
-        print(self.encoder_widgets)

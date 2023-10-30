@@ -35,10 +35,10 @@ class Converter(helpers.Common):
     def __init__(self):
 
             self.output_loc = ''
-            self.codec = Codecs.MP3
-            self.bitrate = Bitrates.B_320
-            self.samplerate = Samplerates.S_44
-            self.encoder = Encoders.LIBMP3LAME
+            self.codec = Codecs.MP3.value
+            self.bitrate = Bitrates.B_320.value
+            self.samplerate = Samplerates.S_44.value
+            self.encoder = Encoders.LIBMP3LAME.value
             self.vbr = False
             self.quality = None
 
@@ -57,14 +57,14 @@ class Converter(helpers.Common):
                 }
 
         options = {
-            'c:a':self.encoder.value, 
-            'ar':self.samplerate.value
+            'c:a':self.encoder, 
+            'ar':self.samplerate
                 }
 
         if metadata.__dict__:
-            name_format = file_out_name.format_map(helpers.FormatFilter(metadata.__dict__)) + '.' + self.codec.value
+            name_format = file_out_name.format_map(helpers.FormatFilter(metadata.__dict__)) + '.' + self.codec
         else:
-            name_format = Path(input_file).stem + '.' + self.codec.value
+            name_format = Path(input_file).stem + '.' + self.codec
 
         path = os.path.join(self.output_loc, name_format)
 
@@ -72,11 +72,11 @@ class Converter(helpers.Common):
         cover = ffmpeg.input(cover_art, pix_fmt='yuvj420p')
 
         match self.codec:
-            case Codecs.MP3:
+            case 'mp3':
                 if self.vbr:
                     options['q:a'] = self.quality
                 elif not self.vbr:
-                    options['b:a'] = self.bitrate.value
+                    options['b:a'] = self.bitrate
 
                 output = (
                     ffmpeg
@@ -85,7 +85,7 @@ class Converter(helpers.Common):
                     .global_args('-map', '1')
                 )
 
-            case Codecs.FLAC:
+            case 'flac':
                 options['compression_level'] = self.quality
 
                 output = (
@@ -95,24 +95,24 @@ class Converter(helpers.Common):
                     .global_args('-map', '1')
                 )
 
-            case Codecs.AIFF:
+            case 'aiff':
                 output = (
                     ffmpeg
                     .output(audio, path, **metadata.get_data(), **cover_data, **options)
                 )
 
-            case Codecs.OGG:
+            case 'ogg':
                 if self.vbr:
                     options['q:a'] = self.quality
                 elif not self.vbr:
-                    options['b:a'] = self.bitrate.value
+                    options['b:a'] = self.bitrate
 
                 output = (
                     ffmpeg
                     .output(audio, cover, path, **options)
                 )
 
-            case Codecs.WAV:
+            case 'wav':
                 output = (
                     ffmpeg
                     .output(audio, path, **options)

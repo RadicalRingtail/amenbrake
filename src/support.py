@@ -11,7 +11,7 @@ class Codecs(Enum):
 
     @classmethod
     def as_list(cls):
-        return(tuple(item.value for item in cls))
+        return(list(item.value for item in cls))
 
 
 class Bitrates(Enum):
@@ -33,7 +33,7 @@ class Bitrates(Enum):
 
     @classmethod
     def as_list(cls):
-        return(tuple(item.value for item in cls))
+        return(list(item.value for item in cls))
 
 
 class Samplerates(Enum):
@@ -49,7 +49,7 @@ class Samplerates(Enum):
 
     @classmethod
     def as_list(cls):
-        return(tuple(item.value for item in cls))
+        return(list(item.value for item in cls))
 
 
 class Encoders(Enum):
@@ -60,7 +60,7 @@ class Encoders(Enum):
 
     @classmethod
     def as_list(cls):
-        return(tuple(item.value for item in cls))
+        return(list(item.value for item in cls))
 
 
 class Quality(Enum):
