@@ -13,17 +13,28 @@ class OutputView(ttk.Frame):
         self.app = app
         self.encoder_widgets = {}
 
+        canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scroll_frame = ttk.Frame(canvas)
+
+        self.scroll_frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=self.winfo_width())
+        canvas.configure(yscrollcommand=scrollbar.set)
+
         add_job_button = ttk.Button(self, text='Add format..', command=self.create_encoder_options)
         add_job_button.pack()
 
         add_job_button = ttk.Button(self, text='Set data', command=self.set_transcode_data)
         add_job_button.pack()
 
-        self.pack()
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        self.pack(fill="both", expand=True)
+        
 
 
     def create_encoder_options(self):
-        option = EncoderOptions(self, self.app)
+        option = EncoderOptions(self.scroll_frame, self.app)
         job = self.app.add_transcode_job({})
 
         self.encoder_widgets[job] = option
@@ -94,7 +105,7 @@ class EncoderOptions(tk.Frame):
         output_label.pack()
         output_entry.pack(pady=12)
         directory_button.pack()
-        frame.pack(fill='x', padx=(10,10), pady=(10,10))
+        frame.pack(fill='x', expand=True, padx=(10,10), pady=(10,10))
 
 
     def on_directory_button(self):
