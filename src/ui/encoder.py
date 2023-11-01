@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
+import platform
 
-from support import Codecs, Samplerates, Quality
+from support import Codecs, Samplerates, Bitrates, Quality
 
 # at this point i was so sick of ui programming that i basically was just fumbling through the code to get it working, this needs to be cleaned up
 
@@ -18,6 +19,7 @@ class OutputView(ttk.Frame):
         self.scroll_frame = ttk.Frame(self.canvas, width=1000)
 
         self.canvas.bind("<Configure>", self.canvas_resize)
+        self.canvas.bind_all('<MouseWheel>', self.canvas_scroll)
         self.scroll_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
         self.c_window = self.canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
@@ -32,11 +34,15 @@ class OutputView(ttk.Frame):
 
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-                
+
 
     def canvas_resize(self, event):
         self.canvas.itemconfig(self.c_window, width=event.width)
 
+    def canvas_scroll(self, event):
+
+        if platform.system() == 'Darwin':
+            self.canvas.yview_scroll(-1 * event.delta, 'units')
 
     def create_encoder_options(self):
         option = EncoderOptions(self.scroll_frame, self.app)
@@ -71,6 +77,7 @@ class EncoderOptions(tk.Frame):
 
         self.codec = tk.StringVar()
         self.samplerate = tk.StringVar()
+        self.bitrate = tk.StringVar()
         self.output = tk.StringVar()
         self.encoder = tk.StringVar()
         self.vbr = tk.BooleanVar()
@@ -78,7 +85,7 @@ class EncoderOptions(tk.Frame):
 
         self.create_settings_widget()
 
-        self.pack(fill='x', padx=(10,10), pady=(10,10), expand=True)
+        self.pack(fill='x', padx=(10,10), pady=(10,10))
 
 
     def create_settings_widget(self):
@@ -89,13 +96,17 @@ class EncoderOptions(tk.Frame):
         codec_dropdown.pack(expand=True, padx=(10,10), pady=(10,10))
 
         self.options_frame = ttk.Frame(self)
-        self.options_frame.pack(expand=True)
+        self.options_frame.pack(expand=True, fill='x', padx=(10,10), pady=(10,10))
 
         self.widgets = []
 
         self.codec.trace("w", self.get_format_type)
 
+        ttk.Separator(self, orient='horizontal').pack(expand=True, fill='x', padx=(10,10),)
+
         self.output_widget()
+
+        remove_button = ttk.Button(self, text='Remove..').pack()
 
 
     def output_widget(self):
@@ -129,30 +140,30 @@ class EncoderOptions(tk.Frame):
             
             case 'mp3':
                 self.widgets = [
-                    ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list()),
+                    ttk.Label(self.options_frame, text='Bitrate:'),
+                    ttk.OptionMenu(self.options_frame, self.bitrate, Bitrates.as_list()[0], *Bitrates.as_list()),
                     ttk.Checkbutton(self.options_frame, text='VBR (Variable Birate)', onvalue=True, offvalue=False, variable=self.vbr),
                     ttk.OptionMenu(self.options_frame, self.quality, Quality.LAME.value[0], *Quality.LAME.value)
                 ]
             case 'flac':
                 self.widgets = [
-                    ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list()),
+                    ttk.Label(self.options_frame, text='Compression:'),
                     ttk.OptionMenu(self.options_frame, self.quality, Quality.LAME.value[0], *Quality.FLAC.value)
                 ]
             case 'wav':
-                self.widgets = [
-                    ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list())
-                ]
+                pass
             case 'ogg':
                 self.widgets = [
-                    ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list()),
+                    ttk.Label(self.options_frame, text='Bitrate:'),
+                    ttk.OptionMenu(self.options_frame, self.bitrate, Bitrates.as_list()[0], *Bitrates.as_list()),
                     ttk.Checkbutton(self.options_frame, text='VBR (Variable Birate)', onvalue=True, offvalue=False, variable=self.vbr),
                     ttk.OptionMenu(self.options_frame, self.quality, Quality.LAME.value[0], *Quality.VORBIS.value)
                 ]
             case 'aiff':
-                self.widgets = [
-                    ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list())
-                ]
+                pass
+        self.widgets.insert(0, ttk.Label(self.options_frame, text='Samplerate:'))
+        self.widgets.insert(1, ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list()))
 
         for w in self.widgets:
-            w.pack()
+            w.pack(pady=5)
 
