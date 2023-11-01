@@ -13,13 +13,15 @@ class OutputView(ttk.Frame):
         self.app = app
         self.encoder_widgets = {}
 
-        canvas = tk.Canvas(self)
-        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scroll_frame = ttk.Frame(canvas)
+        self.canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scroll_frame = ttk.Frame(self.canvas, width=1000)
 
-        self.scroll_frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=self.winfo_width())
-        canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.bind("<Configure>", self.canvas_resize)
+        self.scroll_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        self.c_window = self.canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
 
         add_job_button = ttk.Button(self, text='Add format..', command=self.create_encoder_options)
         add_job_button.pack()
@@ -27,10 +29,13 @@ class OutputView(ttk.Frame):
         add_job_button = ttk.Button(self, text='Set data', command=self.set_transcode_data)
         add_job_button.pack()
 
-        canvas.pack(side="left", fill="both", expand=True)
+
+        self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-        self.pack(fill="both", expand=True)
-        
+                
+
+    def canvas_resize(self, event):
+        self.canvas.itemconfig(self.c_window, width=event.width)
 
 
     def create_encoder_options(self):
@@ -62,6 +67,7 @@ class EncoderOptions(tk.Frame):
     def __init__(self, root, app):
         super().__init__(master=root, bg='gainsboro')
         self.app = app
+        self.width = 1000
 
         self.codec = tk.StringVar()
         self.samplerate = tk.StringVar()
@@ -72,7 +78,7 @@ class EncoderOptions(tk.Frame):
 
         self.create_settings_widget()
 
-        self.pack(fill='x', padx=(10,10), pady=(10,10))
+        self.pack(fill='x', padx=(10,10), pady=(10,10), expand=True)
 
 
     def create_settings_widget(self):
