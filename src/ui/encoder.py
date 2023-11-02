@@ -63,6 +63,8 @@ class OutputView(ttk.Frame):
             job.vbr = item.vbr.get()
             job.quality = item.quality.get()
             job.output_loc = item.output.get()
+            job.parent_dir = item.parent_dir.get()
+            job.zip_folder = item.zip_folder.get()
 
             print(job.__dict__)
 
@@ -82,6 +84,8 @@ class EncoderOptions(tk.Frame):
         self.encoder = tk.StringVar()
         self.vbr = tk.BooleanVar()
         self.quality = tk.StringVar()
+        self.parent_dir = tk.BooleanVar()
+        self.zip_folder = tk.BooleanVar()
 
         self.create_settings_widget()
 
@@ -119,9 +123,14 @@ class EncoderOptions(tk.Frame):
         
         directory_button = ttk.Button(frame, text='Select', command=self.on_directory_button)
 
+        parent_dir_check = ttk.Checkbutton(frame, text='Use parent folder for group', variable=self.parent_dir)
+        zip_check = ttk.Checkbutton(frame, text='Zip folders', variable=self.zip_folder)
+
         output_label.pack()
         output_entry.pack(pady=12)
         directory_button.pack()
+        parent_dir_check.pack()
+        zip_check.pack()
         frame.pack(fill='x', expand=True, padx=(10,10), pady=(10,10))
 
 

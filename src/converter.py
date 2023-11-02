@@ -2,6 +2,7 @@ import ffmpeg, os
 from pathlib import Path
 from support import Codecs, Bitrates, Samplerates, Encoders, Quality
 import helpers
+from zipfile import ZipFile
 
 
 class Metadata(helpers.Common):
@@ -35,6 +36,8 @@ class Converter(helpers.Common):
     def __init__(self):
 
             self.output_loc = ''
+            self.parent_dir = False
+            self.zip_folder = False
             self.codec = Codecs.MP3.value
             self.bitrate = Bitrates.B_320.value
             self.samplerate = Samplerates.S_44.value
@@ -63,14 +66,27 @@ class Converter(helpers.Common):
             'c:a':self.encoder, 
             'ar':self.samplerate
                 }
+        
+        folder_name = ''
 
         if metadata.title == '':
             name_format = Path(input_file).stem + '.' + self.codec
         else:
             name_format = file_out_name.format_map(helpers.FormatFilter(valid_tags)) + '.' + self.codec
 
-        folder_name = '{album_artist} - {album} ({codec})'.format_map(helpers.FormatFilter(valid_tags))
-        full_folder_path = os.path.join(self.output_loc, folder_name)
+            folder_name = '{album_artist} - {album} ({codec})'.format_map(helpers.FormatFilter(valid_tags))
+
+        if self.parent_dir:
+            group_folder = os.path.join(self.output_loc, '{album_artist} - {album}'.format_map(helpers.FormatFilter(valid_tags)))
+            if os.path.exists(group_folder):
+                pass
+            else:
+                os.mkdir(group_folder)
+
+            full_folder_path = os.path.join(group_folder, folder_name)
+
+        else:
+            full_folder_path = os.path.join(self.output_loc, folder_name)
 
         path = os.path.join(full_folder_path, name_format)
 
@@ -132,3 +148,14 @@ class Converter(helpers.Common):
                 )
             
         output.run(overwrite_output=True, quiet=True)
+
+        if self.zip_folder:
+            zip_path = full_folder_path + '.zip'
+            folder_in_zip = os.path.join(folder_name, os.path.basename(path))
+
+            if os.path.exists(zip_path):
+                with ZipFile(zip_path, 'a') as z:
+                    z.write(path, folder_in_zip)
+            else:
+                with ZipFile(zip_path, 'w') as z:
+                    z.write(path, folder_in_zip)
