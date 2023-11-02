@@ -312,6 +312,16 @@ class ImportTree(ttk.Treeview):
                 widget.destroy()
 
 
+    def add_itmes(self, selected_item):
+
+        if 'group' in selected_item['tags']:
+            self.app.add_to_group(self.selection()[0])
+            self.update_tree()
+        elif 'track' in selected_item['tags']:
+            self.app.add_to_group(self.parent(selected_item))
+            self.update_tree()
+
+
     def create_right_click_menu(self, event):
         # creates a right click menu on the tree
 
@@ -320,6 +330,7 @@ class ImportTree(ttk.Treeview):
         menu = tk.Menu(self, tearoff=0)
 
         if 'group' in selected_item['tags']:
+            menu.add_command(label='Add tracks..', command=lambda: self.add_itmes(selected_item))
             menu.add_command(label='Remove..', command=self.remove_items)
         elif 'track' in selected_item['tags']:
             menu.add_command(label='Remove..', command=self.remove_items)

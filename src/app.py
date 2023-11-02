@@ -158,13 +158,16 @@ class Application():
         self.group_queue[group_id] = group
 
 
-    def add_to_group(self, id, tracks):
+    def add_to_group(self, id):
         # adds tracks to an existing group
 
-        group = self.group_queue[id]
+        files = filedialog.askopenfilenames(title='Open file(s)', initialdir='/', filetypes=FILEDIALOG_SUPPORTED_FILES())
 
-        for new_track in tracks:
-            group.tracks.append(new_track)
+        if files:
+            tracks = self.create_track_objects(files)
+            group = self.group_queue[id]
+
+            group.tracks.update(tracks)
 
 
     def get_cover_art(self, group):
