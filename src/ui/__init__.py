@@ -15,7 +15,7 @@ class Window(tk.Tk):
         self.app = Application()
 
         self.title('AmenBrake')
-        self.geometry('800x700')
+        self.geometry('800x800')
         self.minsize(800,700)
         self.protocol('WM_DELETE_WINDOW', self.on_close)
         

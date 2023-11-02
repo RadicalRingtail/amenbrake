@@ -58,7 +58,8 @@ work in progress
 
 ## Known issues
 
-- The UI layout can be a bit buggy at times
+- The application is still in early development, many critical features are missing (error handling, logs, organization features, etc.). The program may not work as expected or may break completely.
+- The UI layout can be buggy at times.
 
 ----------------
 
