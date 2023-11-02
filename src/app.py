@@ -61,6 +61,8 @@ class Application():
         self.group_queue = {}
         self.transcode_queue = {}
         self.file_name_format = '{title}'
+        self.sub_folder_name_format = '{album_artist} - {album} ({codec})'
+        self.parent_folder_name_format = '{album_artist} - {album}'
         self.progress_window = None
 
     def exit(self):
@@ -249,7 +251,9 @@ class Application():
                         track.path,
                         track.cover_art,
                         track.metadata,
-                        self.file_name_format
+                        self.file_name_format,
+                        self.sub_folder_name_format,
+                        self.parent_folder_name_format
                     )
 
 

@@ -46,7 +46,7 @@ class Converter(helpers.Common):
             self.quality = None
 
 
-    def convert(self, input_file, cover_art, metadata: Metadata, file_out_name):
+    def convert(self, input_file, cover_art, metadata: Metadata, file_out_name, folder_out_name, parent_folder_name):
         # transcodes, adds metadata/cover art, sets encoding options
 
         # todo: aac support
@@ -74,10 +74,10 @@ class Converter(helpers.Common):
         else:
             name_format = file_out_name.format_map(helpers.FormatFilter(valid_tags)) + '.' + self.codec
 
-            folder_name = '{album_artist} - {album} ({codec})'.format_map(helpers.FormatFilter(valid_tags))
+            folder_name = folder_out_name.format_map(helpers.FormatFilter(valid_tags))
 
         if self.parent_dir:
-            group_folder = os.path.join(self.output_loc, '{album_artist} - {album}'.format_map(helpers.FormatFilter(valid_tags)))
+            group_folder = os.path.join(self.output_loc, parent_folder_name.format_map(helpers.FormatFilter(valid_tags)))
             if os.path.exists(group_folder):
                 pass
             else:

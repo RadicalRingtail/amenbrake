@@ -14,6 +14,33 @@ class OutputView(ttk.Frame):
         self.app = app
         self.encoder_widgets = {}
 
+        self.file_name = tk.StringVar()
+        self.folder_name = tk.StringVar()
+        self.parent_name = tk.StringVar()
+
+        self.file_name.set(self.app.file_name_format)
+        self.folder_name.set(self.app.sub_folder_name_format)
+        self.parent_name.set(self.app.parent_folder_name_format)
+
+        top_frame = ttk.Frame(self)
+
+        ttk.Label(top_frame, text='Filename format').pack()
+        ttk.Entry(top_frame, textvariable=self.file_name).pack(pady=(0,5))
+
+        ttk.Label(top_frame, text='Folder name format').pack()
+        ttk.Entry(top_frame, textvariable=self.folder_name).pack(pady=(0,5))
+
+        ttk.Label(top_frame, text='Parent folder name format').pack()
+        ttk.Entry(top_frame, textvariable=self.parent_name).pack(pady=(0,5))
+
+        add_job_button = ttk.Button(top_frame, text='Add format..', command=self.create_encoder_options)
+        add_job_button.pack()
+
+        top_frame.pack()
+
+        self.create_encoder_widget_canvas()
+
+    def create_encoder_widget_canvas(self):
         self.canvas = tk.Canvas(self)
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.scroll_frame = ttk.Frame(self.canvas, width=1000)
@@ -25,16 +52,8 @@ class OutputView(ttk.Frame):
         self.c_window = self.canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        add_job_button = ttk.Button(self, text='Add format..', command=self.create_encoder_options)
-        add_job_button.pack()
-
-        add_job_button = ttk.Button(self, text='Set data', command=self.set_transcode_data)
-        add_job_button.pack()
-
-
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-
 
     def canvas_resize(self, event):
         self.canvas.itemconfig(self.c_window, width=event.width)
@@ -45,11 +64,15 @@ class OutputView(ttk.Frame):
             self.canvas.yview_scroll(-1 * event.delta, 'units')
 
     def create_encoder_options(self):
-        option = EncoderOptions(self.scroll_frame, self.app)
         job = self.app.add_transcode_job({})
+        option = EncoderOptions(self.scroll_frame, self.app, job, self)
 
         self.encoder_widgets[job] = option
-        print(self.encoder_widgets)
+    
+    def remove_widget(self, widget_id):
+        del self.app.transcode_queue[widget_id]
+        self.encoder_widgets[widget_id].destroy()
+        del self.encoder_widgets[widget_id]
 
     def set_transcode_data(self):
 
@@ -68,14 +91,20 @@ class OutputView(ttk.Frame):
 
             print(job.__dict__)
 
+        self.app.file_name_format = self.file_name.get()
+        self.app.sub_folder_name_format = self.folder_name.get()
+        self.app.parent_folder_name_format = self.parent_name.get()
+
 
 class EncoderOptions(tk.Frame):
     # widget that gives you encoding options for a transcode job in queue
 
-    def __init__(self, root, app):
+    def __init__(self, root, app, widget_id, master):
         super().__init__(master=root, bg='gainsboro')
         self.app = app
         self.width = 1000
+        self.master = master
+        self.widget_id = widget_id
 
         self.codec = tk.StringVar()
         self.samplerate = tk.StringVar()
@@ -110,7 +139,7 @@ class EncoderOptions(tk.Frame):
 
         self.output_widget()
 
-        remove_button = ttk.Button(self, text='Remove..').pack()
+        ttk.Button(self, text='Remove..', command=lambda: self.master.remove_widget(self.widget_id)).pack()
 
 
     def output_widget(self):
