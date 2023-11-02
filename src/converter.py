@@ -49,6 +49,9 @@ class Converter(helpers.Common):
         # todo: aac support
 
         output = None
+        
+        valid_tags = metadata.__dict__
+        valid_tags.update(super().__dict__)
 
         cover_data = {
             'c:v':'mjpeg',
@@ -61,12 +64,22 @@ class Converter(helpers.Common):
             'ar':self.samplerate
                 }
 
-        if metadata.__dict__:
-            name_format = file_out_name.format_map(helpers.FormatFilter(metadata.__dict__)) + '.' + self.codec
-        else:
+        if metadata.title == '':
             name_format = Path(input_file).stem + '.' + self.codec
+        else:
+            name_format = file_out_name.format_map(helpers.FormatFilter(valid_tags)) + '.' + self.codec
 
-        path = os.path.join(self.output_loc, name_format)
+        folder_name = '{album_artist} - {album} ({codec})'.format_map(helpers.FormatFilter(valid_tags))
+        full_folder_path = os.path.join(self.output_loc, folder_name)
+
+        path = os.path.join(full_folder_path, name_format)
+
+        print(path)
+
+        if os.path.exists(full_folder_path):
+            pass
+        else:
+            os.mkdir(full_folder_path)
 
         audio = ffmpeg.input(input_file).audio
         cover = ffmpeg.input(cover_art, pix_fmt='yuvj420p')
@@ -118,4 +131,4 @@ class Converter(helpers.Common):
                     .output(audio, path, **options)
                 )
             
-        output.run()
+        output.run(overwrite_output=True, quiet=True)

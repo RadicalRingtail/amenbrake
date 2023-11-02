@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import platform
 
-from support import Codecs, Samplerates, Bitrates, Quality
+from support import Codecs, Samplerates, Bitrates, Quality, Encoders
 
 # at this point i was so sick of ui programming that i basically was just fumbling through the code to get it working, this needs to be cleaned up
 
@@ -145,13 +145,15 @@ class EncoderOptions(tk.Frame):
                     ttk.Checkbutton(self.options_frame, text='VBR (Variable Birate)', onvalue=True, offvalue=False, variable=self.vbr),
                     ttk.OptionMenu(self.options_frame, self.quality, Quality.LAME.value[0], *Quality.LAME.value)
                 ]
+                self.encoder.set(Encoders.LIBMP3LAME.value)
             case 'flac':
                 self.widgets = [
                     ttk.Label(self.options_frame, text='Compression:'),
                     ttk.OptionMenu(self.options_frame, self.quality, Quality.LAME.value[0], *Quality.FLAC.value)
                 ]
+                self.encoder.set(Encoders.FLAC.value)
             case 'wav':
-                pass
+                self.encoder.set(Encoders.PCM_16.value)
             case 'ogg':
                 self.widgets = [
                     ttk.Label(self.options_frame, text='Bitrate:'),
@@ -159,8 +161,9 @@ class EncoderOptions(tk.Frame):
                     ttk.Checkbutton(self.options_frame, text='VBR (Variable Birate)', onvalue=True, offvalue=False, variable=self.vbr),
                     ttk.OptionMenu(self.options_frame, self.quality, Quality.LAME.value[0], *Quality.VORBIS.value)
                 ]
+                self.encoder.set(Encoders.VORBIS.value)
             case 'aiff':
-                pass
+                self.encoder.set(Encoders.PCM_16.value)
         self.widgets.insert(0, ttk.Label(self.options_frame, text='Samplerate:'))
         self.widgets.insert(1, ttk.OptionMenu(self.options_frame, self.samplerate, Samplerates.as_list()[0], *Samplerates.as_list()))
 

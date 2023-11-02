@@ -92,7 +92,6 @@ class EditorWidget(ttk.Frame):
             i.destroy()
 
         copy_button = ttk.Button(self.input_frame, text='Copy group data to tracks', command=self.copy_group_data)
-        ToolTip(copy_button, msg='This will overwrite the metadata for album, album artist, and date for the tracks in this group.', delay=1.0)
 
         self.entry_widgets = [
             self.create_entry_widget(self.input_frame, 'Artist:', self.album_artist),
@@ -293,6 +292,9 @@ class ImportTree(ttk.Treeview):
 
                 track_index += 1
 
+        selection_id = self.get_children()[0]
+        self.focus(selection_id)
+        self.selection_set(selection_id)
     
     def remove_items(self):
         # removes all selected tree items

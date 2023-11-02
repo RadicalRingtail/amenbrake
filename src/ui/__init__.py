@@ -103,7 +103,13 @@ class BottomBar(ttk.Frame):
         confirmation = messagebox.askokcancel(message="Are you sure you want to start the queue?")
         
         if confirmation:
-            self.root.main.output_view.set_transcode_data()
+
+            if self.app.transcode_queue:
+                self.root.main.output_view.set_transcode_data()
+                self.app.start_queue()
+                self.bell()
+            else:
+                messagebox.showerror(message='No output format specified!')
         else:
             pass
 
@@ -120,9 +126,21 @@ class Tabs(ttk.Notebook):
         self.add(self.input_view, text='Import')
         self.add(self.output_view, text='Encoder')
 
-        self.bind('<<NotebookTabChanged>>', lambda update: root.update_idletasks())
+        self.bind('<<NotebookTabChanged>>', lambda e: root.update_idletasks())
+
+        # this is hacky
+        self.bind('<<NotebookTabChanged>>', self.save_metadata)
 
         self.pack(expand=True, fill='both')
+
+    def save_metadata(self, event):
+        # hacky workaround for now to get metadata to stop a bug where the metadata doesnt get saved if you only have one track selected idk man
+
+        e = self.input_view.editor
+
+        e.tree.previous_selected_item = e.tree.current_selected_item
+        e.set_data()
+
 
 
 class InputView(ttk.Frame):
