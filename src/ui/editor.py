@@ -296,6 +296,7 @@ class ImportTree(ttk.Treeview):
         self.focus(selection_id)
         self.selection_set(selection_id)
     
+
     def remove_items(self):
         # removes all selected tree items
 
@@ -313,6 +314,7 @@ class ImportTree(ttk.Treeview):
 
 
     def add_itmes(self, selected_item):
+        # adds tracks to a selected group
 
         if 'group' in selected_item['tags']:
             self.app.add_to_group(self.selection()[0])
@@ -320,6 +322,15 @@ class ImportTree(ttk.Treeview):
         elif 'track' in selected_item['tags']:
             self.app.add_to_group(self.parent(selected_item))
             self.update_tree()
+
+        self.app.progress_window.close()
+
+
+    def add_group(self):
+        # makes new empty group
+
+        self.app.create_group({},'')
+        self.update_tree()
 
 
     def create_right_click_menu(self, event):
@@ -337,6 +348,7 @@ class ImportTree(ttk.Treeview):
         else:
             menu.add_command(label='Import track(s)..', command=lambda: self.right_click_import('file'))
             menu.add_command(label='Import folder..', command=lambda: self.right_click_import('folder'))
+            menu.add_command(label='Create group..', command=self.add_group)
 
         try: 
             menu.tk_popup(event.x_root, event.y_root) 

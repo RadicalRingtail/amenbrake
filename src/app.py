@@ -24,7 +24,7 @@ class Group(helpers.Common):
     # instances a group object
 
     def __init__(self):
-        self.tracks = None
+        self.tracks = {}
         self.temp_path = None
         self.cover_art = None
         self.preview_art = None
@@ -61,7 +61,7 @@ class Application():
         self.group_queue = {}
         self.transcode_queue = {}
         self.file_name_format = '{title}'
-    
+        self.progress_window = None
 
     def exit(self):
         # runs when app is closed
@@ -106,6 +106,9 @@ class Application():
 
         track_objects = {}
 
+        if self.progress_window is None:
+            self.progress_window = ProgressWindow()
+
         for path in paths:
             self.progress_window.current_item.set('Importing:\n' + Path(path).name)
             self.progress_window.update()
@@ -119,6 +122,8 @@ class Application():
 
             if 'tags' in probe_data:
                 metadata.set_data(probe_data['tags'])
+            else:
+                metadata.title = Path(path).stem
 
             track.metadata = metadata
 
@@ -132,29 +137,30 @@ class Application():
 
         group = Group()
         group_id = str(id(group))
-
-        group.tracks = tracks
         group.temp_path = os.path.join(self.temp_folder.name, group_id)
-        os.mkdir(group.temp_path)
-
         metadata = Metadata()
 
-        if import_type == 'folder':
-            metadata.album = os.path.basename(self.folder)
+        os.mkdir(group.temp_path)
+
+        if tracks:
+
+            group.tracks = tracks
+
+            if import_type == 'folder':
+                metadata.album = os.path.basename(self.folder)
+
+            self.get_cover_art(group)
+
+            images = Path(group.temp_path).glob('*.jpg')
+            image_list = list(i for i in images)
+
+            # gets first image gotten in temp cover art folder
+            if not image_list:
+                pass
+            else:
+                group.cover_art = os.path.join(group.temp_path, image_list[0].name)
 
         group.metadata = metadata
-
-        self.get_cover_art(group)
-
-        images = Path(group.temp_path).glob('*.jpg')
-        image_list = list(i for i in images)
-
-        # gets first image gotten in temp cover art folder
-        if not image_list:
-            pass
-        else:
-           group.cover_art = os.path.join(group.temp_path, image_list[0].name)
-
         self.group_queue[group_id] = group
 
 
@@ -168,6 +174,7 @@ class Application():
             group = self.group_queue[id]
 
             group.tracks.update(tracks)
+            self.get_cover_art(group)
 
 
     def get_cover_art(self, group):
@@ -193,7 +200,7 @@ class Application():
                     .input(track.path)
                     .output(file_output_rip, **{'c:v':'copy', 'frames:v':'1'})
                     .global_args('-an')
-                    .run(overwrite_output=True, capture_stderr=True, quiet=True)
+                    .run(overwrite_output=True, quiet=True)
                 )
 
                 resize = Image.open(file_output_rip).resize((128,128))
@@ -205,7 +212,7 @@ class Application():
 
                 index += 1
             except ffmpeg.Error as e:
-                print('error retrieving cover art')
+                print('error retrieving cover art: ' + str(e))
 
     def create_preview(self, img_path, item_id):
 
