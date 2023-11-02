@@ -32,6 +32,8 @@ class Metadata(helpers.Common):
 
 class Converter(helpers.Common):
     # creates a new conversion job with specified settings that can be executed on multiple files
+    # wav is borked, fix that
+    # files not recieving metadata when converted in large batches for some reason
 
     def __init__(self):
 

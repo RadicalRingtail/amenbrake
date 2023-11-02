@@ -65,6 +65,7 @@ class EditorWidget(ttk.Frame):
         self.pack(fill='x')
         self.tree.pack(fill='both', expand=True)
 
+    # track and album entry widgets should stay the same height
 
     def create_track_entry(self):
         # creates album entry widgets
@@ -268,6 +269,7 @@ class ImportTree(ttk.Treeview):
 
     def update_tree(self):
         # removes all entries and re-adds them every time this is called (probably not efficient)
+        # selection should stay on the current item when updated
 
         index = 0
         track_index = 0
