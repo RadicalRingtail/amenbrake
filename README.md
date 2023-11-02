@@ -1,7 +1,7 @@
 # AmenBrake
 [![GitHub](https://img.shields.io/github/license/RadicalRingtail/css-reset)](https://github.com/RadicalRingtail/converter-tool/blob/main/LICENSE.md)
 
-A simple audio transcoder and metadata editor.
+A simple audio transcoder and metadata editor. (still in early development, use at your own risk)
 
 ![AmenBrake Screenshot](image.png)
 
@@ -13,7 +13,7 @@ A simple audio transcoder and metadata editor.
 - [Requirements](#requirements)
 - [Download](#download)
 - [FAQ](#faq)
-- [Known sssues](#known-issues)
+- [Known issues](#known-issues)
 - [Report a bug](#report-a-bug)
 - [Contributing](#contributing)
 - [Support this project](#support-this-project)
