@@ -56,7 +56,7 @@ class Encoders(Enum):
     LIBMP3LAME = 'libmp3lame'
     FLAC = 'flac'
     VORBIS = 'libvorbis'
-    PCM_16 = 'pcm_s16be'
+    PCM_16 = 'pcm_s16le'
 
     @classmethod
     def as_list(cls):

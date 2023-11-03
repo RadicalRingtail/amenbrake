@@ -32,8 +32,6 @@ class Metadata(helpers.Common):
 
 class Converter(helpers.Common):
     # creates a new conversion job with specified settings that can be executed on multiple files
-    # wav is borked, fix that
-    # files not recieving metadata when converted in large batches for some reason
 
     def __init__(self):
 
@@ -55,7 +53,7 @@ class Converter(helpers.Common):
 
         output = None
         
-        valid_tags = metadata.__dict__
+        valid_tags = metadata.__dict__.copy()
         valid_tags.update(super().__dict__)
 
         cover_data = {
@@ -92,7 +90,7 @@ class Converter(helpers.Common):
 
         path = os.path.join(full_folder_path, name_format)
 
-        print(path)
+        print(metadata.__dict__)
 
         if os.path.exists(full_folder_path):
             pass
@@ -149,7 +147,7 @@ class Converter(helpers.Common):
                     .output(audio, path, **options)
                 )
             
-        output.run(overwrite_output=True, quiet=True)
+        output.run(overwrite_output=True)
 
         if self.zip_folder:
             zip_path = full_folder_path + '.zip'
