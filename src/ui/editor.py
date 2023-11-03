@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tktooltip import ToolTip
 from tkinter import filedialog
 from pathlib import Path
 from PIL import Image, ImageTk
