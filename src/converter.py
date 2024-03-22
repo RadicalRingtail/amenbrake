@@ -138,7 +138,7 @@ class Converter(helpers.Common):
 
                 output = (
                     ffmpeg
-                    .output(audio, cover, path, **options)
+                    .output(audio, path, **options)
                 )
 
             case 'wav':

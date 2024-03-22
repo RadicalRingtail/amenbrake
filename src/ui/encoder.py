@@ -165,6 +165,7 @@ class EncoderOptions(tk.Frame):
 
     def on_directory_button(self):
         # opens filedialog for output_widget and sets the output directory string
+        # fix no cover art causing error
 
         directory = filedialog.askdirectory(title='Select folder..')
         self.output.set(directory)
