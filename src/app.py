@@ -60,7 +60,7 @@ class Application():
         self.temp_folder = tempfile.TemporaryDirectory()
         self.group_queue = {}
         self.transcode_queue = {}
-        self.file_name_format = '{title}'
+        self.file_name_format = '{track} - {title}'
         self.sub_folder_name_format = '{album_artist} - {album} ({codec})'
         self.parent_folder_name_format = '{album_artist} - {album}'
         self.progress_window = None
